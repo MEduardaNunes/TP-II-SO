@@ -1,69 +1,15 @@
-#include "simulador.h"
-#include <stdlib.h>
-#include <string.h>
+#include "../header/tabelaDensa.h"
+#include "../header/simulador.h"
+#include "../header/funcoesGerais.h"
+
 #include <stdio.h>
-#include <limits.h>
+#include <stdlib.h> 
 
 
-// Estruturas globais para o simulador
-int tempo = 0;
-
-EspecificacaoSimulador simulador = {
-    .numeroPaginas = 0,
-    .numeroQuadros = 0,
-    .tamanhoPagina = 0,
-    .tamanhoMemoria = 0,
-    .politicaSubstituicao = "",
-    .tabelaDePaginas = "",
-    .estatisticasSimulador = {0, 0, 0}
-};
-EstatisticasTabela estatisticasTabelaDensa = {0, 0};
-EstatisticasTabela estatisticasTabelaInvertida = {0, 0};
-EstatisticasTabela estatisticasTabelaHierarquica2 = {0, 0};
-EstatisticasTabela estatisticasTabelaHierarquica3 = {0, 0};
-
-
-// Função para simulador
-int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros) {
-    for (int i = 0; i < numeroQuadros; i++) {
-        if (quadrosLivres[i]) {
-            return i;
-        }
-    }
-    return -1; // Retorna -1 se não houver quadros livres
-}
-
-
-// Funções para manipulação Entrada
-void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
-    entrada->numeroPagina = -1;
-    entrada->numeroQuadro = -1;
-    entrada->bitPresenca = false;
-    entrada->bitModificacao = false;
-    entrada->ultimoAcesso = 0;
-    entrada->quantidadeAcessos = 0;
-}
-
-void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso) {
-    entrada->numeroPagina = numeroPagina;
-    entrada->numeroQuadro = numeroQuadro;
-    entrada->bitPresenca = true;
-    entrada->ultimoAcesso = ultimoAcesso;
-    entrada->quantidadeAcessos++;
-}
-
-void setarBitModificacao(InformacoesEntrada *entrada) {
-    entrada->bitModificacao = true;
-}
-
-void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, char tipoAcesso) {
-    entrada->ultimoAcesso = ultimoAcesso;
-    entrada->quantidadeAcessos++;
-    if (tipoAcesso == 'W') {
-        setarBitModificacao(entrada);
-    }
-}
-
+// Estruturas e funções auxiliares para manipulação da tabela densa
+extern int tempo;
+extern EspecificacaoSimulador simulador;
+extern EstatisticasTabela estatisticasTabelaDensa;
 
 // Funções para manipulação Tabela Densa
 void inicializarTabelaDensa(TabelaDensa *tabela, int capacidade) {
@@ -85,11 +31,14 @@ void destruirTabelaDensa(TabelaDensa *tabela) {
     tabela->entradas = NULL;
 }
 
-// int RANTabelaDensa(TabelaDensa *tabela)
-//     // Implementação da política RANDOMICO
 
-// int LRUTabelaDensa(TabelaDensa *tabela)
-//     // Implementação da política LRU
+int RANTabelaDensa(TabelaDensa *tabela) {
+    
+}
+
+int LRUTabelaDensa(TabelaDensa *tabela) {
+
+}
 
 int MFUTabelaDensa(TabelaDensa *tabela) {
     int paginaMaisFrequente = -1;
@@ -125,10 +74,10 @@ int LFUTabelaDensa(TabelaDensa *tabela) {
 
 int selecionaPaginaParaSubstituirTabelaDensa(TabelaDensa *tabela, char *politicaSubstituicao) {
     if (strcmp(politicaSubstituicao, "RAN") == 0) {
-        // return RANTabelaDensa(tabela);
+        return RANTabelaDensa(tabela);
 
     } else if (strcmp(politicaSubstituicao, "LRU") == 0) {
-        // return LRUTabelaDensa(tabela);
+        return LRUTabelaDensa(tabela);
 
     } else if (strcmp(politicaSubstituicao, "MFU") == 0) {
         return MFUTabelaDensa(tabela);
@@ -198,7 +147,4 @@ void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAc
             printf("Erro: Não foi possível substituir uma página.\n");
         }
     }
-}
-
-int main () {
 }

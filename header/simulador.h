@@ -1,6 +1,8 @@
 #ifndef SIMULADOR_H
 #define SIMULADOR_H
 
+#include "funcoesGerais.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -14,7 +16,6 @@ typedef struct {
     long numeroPaginasSujasEscritas;
 } EstatisticasSimulador;
 
-
 // Estrutura da especificação do simulador
 typedef struct {
     int numeroPaginas;
@@ -26,40 +27,6 @@ typedef struct {
     bool *quadrosLivres;
     EstatisticasSimulador estatisticasSimulador;
 } EspecificacaoSimulador;
-
-
-// Estrutura estatísticas da tabela de páginas
-typedef struct {
-    long acessosTabela;
-    long memoriaConsumida;
-} EstatisticasTabela;
-
-
-// Estrutura de tempo
-extern int tempo;
-
-
-// Informações gerais da entrada da tabela de páginas
-typedef struct {
-    int numeroPagina;
-    int numeroQuadro;
-    bool bitPresenca;
-    bool bitModificacao;
-    int ultimoAcesso;
-    int quantidadeAcessos;
-} InformacoesEntrada;
-
-
-// Estrutura da Tabela de Página densa
-typedef struct {
-    InformacoesEntrada informacoes;
-} EntradaTabelaDensa;
-
-typedef struct {
-    EntradaTabelaDensa* entradas;
-    int quantidadeEntradasPreenchidas;
-    int capacidade;
-} TabelaDensa;
 
 
 // Estrutura da Tabela de Páginas Invertida
