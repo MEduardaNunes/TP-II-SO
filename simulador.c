@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <limits.h>
 
+
+// Estruturas globais para o simulador
 int tempo = 0;
 
 EspecificacaoSimulador simulador = {
@@ -15,9 +17,24 @@ EspecificacaoSimulador simulador = {
     .tabelaDePaginas = "",
     .estatisticasSimulador = {0, 0, 0}
 };
-
 EstatisticasTabela estatisticasTabelaDensa = {0, 0};
+EstatisticasTabela estatisticasTabelaInvertida = {0, 0};
+EstatisticasTabela estatisticasTabelaHierarquica2 = {0, 0};
+EstatisticasTabela estatisticasTabelaHierarquica3 = {0, 0};
 
+
+// Função para simulador
+int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros) {
+    for (int i = 0; i < numeroQuadros; i++) {
+        if (quadrosLivres[i]) {
+            return i;
+        }
+    }
+    return -1; // Retorna -1 se não houver quadros livres
+}
+
+
+// Funções para manipulação Entrada
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
     entrada->numeroPagina = -1;
     entrada->numeroQuadro = -1;
@@ -47,6 +64,8 @@ void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, 
     }
 }
 
+
+// Funções para manipulação Tabela Densa
 void inicializarTabelaDensa(TabelaDensa *tabela, int capacidade) {
     tabela->entradas = (EntradaTabelaDensa*) malloc(capacidade * sizeof(EntradaTabelaDensa));
     if (tabela->entradas == NULL) {
@@ -65,6 +84,12 @@ void destruirTabelaDensa(TabelaDensa *tabela) {
     free(tabela->entradas);
     tabela->entradas = NULL;
 }
+
+// int RANTabelaDensa(TabelaDensa *tabela)
+//     // Implementação da política RANDOMICO
+
+// int LRUTabelaDensa(TabelaDensa *tabela)
+//     // Implementação da política LRU
 
 int MFUTabelaDensa(TabelaDensa *tabela) {
     int paginaMaisFrequente = -1;
@@ -98,21 +123,12 @@ int LFUTabelaDensa(TabelaDensa *tabela) {
     return paginaMenosFrequente;
 }
 
-int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros) {
-    for (int i = 0; i < numeroQuadros; i++) {
-        if (quadrosLivres[i]) {
-            return i;
-        }
-    }
-    return -1; // Retorna -1 se não houver quadros livres
-}
-
 int selecionaPaginaParaSubstituirTabelaDensa(TabelaDensa *tabela, char *politicaSubstituicao) {
     if (strcmp(politicaSubstituicao, "RAN") == 0) {
-        // Implementação da política RANDOMICO
+        // return RANTabelaDensa(tabela);
 
     } else if (strcmp(politicaSubstituicao, "LRU") == 0) {
-        // Implementação da política LRU
+        // return LRUTabelaDensa(tabela);
 
     } else if (strcmp(politicaSubstituicao, "MFU") == 0) {
         return MFUTabelaDensa(tabela);
@@ -121,7 +137,7 @@ int selecionaPaginaParaSubstituirTabelaDensa(TabelaDensa *tabela, char *politica
         return LFUTabelaDensa(tabela);
     }
 
-    return -1; // Retorna -1 se nenhuma página for selecionada
+    return -1;
 }
 
 void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAcesso) {
