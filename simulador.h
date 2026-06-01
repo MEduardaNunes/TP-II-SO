@@ -1,72 +1,111 @@
+#ifndef SIMULADOR_H
+#define SIMULADOR_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+
+// Estrutura para armazenar as informações de acessos à memória
+typedef struct {
+    int numeroAcessosMemoria;
+    int numeroPageFaults;
+    int numeroPaginasSujasEscritas;
+} InformacaoAcessos;
+
+
+// Estrutura da especificação do simulador
+typedef struct {
+    int numeroPaginas;
+    int numeroQuadros;
+    int tamanhoPagina;
+    int tamanhoMemoria;
+    char* politicaSubstituicao;
+    char* tabelaDePaginas;
+    bool *quadrosLivres;
+    InformacaoAcessos informacaoAcessos;
+} EspecificacaoSimulador;
+
+
 // Estrutura de tempo
-int tempo = 0;
-void incrementarTempo(int tempo) {}
+extern int tempo;
+
 
 // Informações gerais da entrada da tabela de páginas
-struct InformacoesEntrada {
+typedef struct {
     int numeroPagina;
     int numeroQuadro;
     bool bitPresenca;
     bool bitModificacao;
     int ultimoAcesso;
     int quantidadeAcessos;
-};
+} InformacoesEntrada;
+
 
 // Estrutura da Tabela de Página densa
-struct EntradaTabelaDensa {
-    struct InformacoesEntrada informacoes;
-};
+typedef struct {
+    InformacoesEntrada informacoes;
+} EntradaTabelaDensa;
 
-struct TabelaDensa {
-    struct EntradaTabelaDensa* entradas;
+typedef struct {
+    EntradaTabelaDensa* entradas;
     int quantidadeEntradasPreenchidas;
     int capacidade;
-};
+} TabelaDensa;
+
 
 // Estrutura da Tabela de Páginas Invertida
-struct EntradaTabelaInvertida {
-    struct InformacoesEntrada informacoes;
+typedef struct EntradaTabelaInvertida {
+    InformacoesEntrada informacoes;
     struct EntradaTabelaInvertida* proximo;
-};
+} EntradaTabelaInvertida;
 
-struct TabelaInvertida {
-    struct EntradaTabelaInvertida* entradas;
+typedef struct {
+    EntradaTabelaInvertida* entradas;
     int capacidade;
-}
+} TabelaInvertida;
+
 
 // Estrutura da Tabela de Páginas Hierárquica de dois níveis
-struct EntradaTabelaHierarquicaNivel1_2 {
-    struct EntradaTabelaHierarquicaNivel2* entradas;
-    int capacidadeEntradasNivel2;
-};
 
-struct EntradaTabelaHierarquicaNivel2_2 {
-    struct InformacoesEntrada informacoes;
-};
+typedef struct {
+    InformacoesEntrada informacoes;
+} EntradaTabelaHierarquicaNivel2_2;
 
-struct TabelaHierarquica_2 {
-    struct EntradaTabelaHierarquicaNivel1 tabelaBase;
+typedef struct {
+    EntradaTabelaHierarquicaNivel2_2* entradas;
     int quantidadeEntradasPreenchidas;
-    int capacidadeNivel1;
-};
+    int capacidadeEntradasNivel1;
+} EntradaTabelaHierarquicaNivel1_2;
+
+typedef struct {
+    EntradaTabelaHierarquicaNivel1_2 tabelaBase;
+    int quantidadeEntradasPreenchidas;
+} TabelaHierarquica_2;
+
 
 // Estrutura da Tabela de Páginas Hierárquica de três níveis
-struct EntradaTabelaHierarquicaNivel1_3 {
-    struct EntradaTabelaHierarquicaNivel2* entradas;
-    int capacidadeEntradasNivel2;
-};
 
-struct EntradaTabelaHierarquicaNivel2_3 {
-    struct EntradaTabelaHierarquicaNivel3* entradas;
-    int capacidadeEntradasNivel3;
-};
+typedef struct {
+    InformacoesEntrada informacoes;
+} EntradaTabelaHierarquicaNivel3_3;
 
-struct EntradaTabelaHierarquicaNivel3_3 {
-    struct InformacoesEntrada informacoes;
-};
-
-struct TabelaHierarquica_3 {
-    struct EntradaTabelaHierarquicaNivel1 tabelaBase;
+typedef struct {
+    EntradaTabelaHierarquicaNivel3_3* entradas;
     int quantidadeEntradasPreenchidas;
-    int capacidadeNivel1;
-};
+    int capacidadeEntradasNivel2;
+} EntradaTabelaHierarquicaNivel2_3;
+
+typedef struct {
+    EntradaTabelaHierarquicaNivel2_3* entradas;
+    int quantidadeEntradasPreenchidas;
+    int capacidadeEntradasNivel1;
+} EntradaTabelaHierarquicaNivel1_3;
+
+typedef struct {
+    EntradaTabelaHierarquicaNivel1_3 tabelaBase;
+    int quantidadeEntradasPreenchidas;
+} TabelaHierarquica_3;
+
+#endif
