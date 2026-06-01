@@ -9,10 +9,10 @@
 
 // Estrutura para armazenar as informações de acessos à memória
 typedef struct {
-    int numeroAcessosMemoria;
-    int numeroPageFaults;
-    int numeroPaginasSujasEscritas;
-} InformacaoAcessos;
+    long numeroReferenciasMemoria;
+    long numeroPageFaults;
+    long numeroPaginasSujasEscritas;
+} EstatisticasSimulador;
 
 
 // Estrutura da especificação do simulador
@@ -24,8 +24,15 @@ typedef struct {
     char* politicaSubstituicao;
     char* tabelaDePaginas;
     bool *quadrosLivres;
-    InformacaoAcessos informacaoAcessos;
+    EstatisticasSimulador estatisticasSimulador;
 } EspecificacaoSimulador;
+
+
+// Estrutura estatísticas da tabela de páginas
+typedef struct {
+    long acessosTabela;
+    long memoriaConsumida;
+} EstatisticasTabela;
 
 
 // Estrutura de tempo
@@ -68,7 +75,6 @@ typedef struct {
 
 
 // Estrutura da Tabela de Páginas Hierárquica de dois níveis
-
 typedef struct {
     InformacoesEntrada informacoes;
 } EntradaTabelaHierarquicaNivel2_2;
@@ -86,7 +92,6 @@ typedef struct {
 
 
 // Estrutura da Tabela de Páginas Hierárquica de três níveis
-
 typedef struct {
     InformacoesEntrada informacoes;
 } EntradaTabelaHierarquicaNivel3_3;

@@ -13,8 +13,10 @@ EspecificacaoSimulador simulador = {
     .tamanhoMemoria = 0,
     .politicaSubstituicao = "",
     .tabelaDePaginas = "",
-    .informacaoAcessos = {0, 0, 0}
+    .estatisticasSimulador = {0, 0, 0}
 };
+
+EstatisticasTabela estatisticasTabelaDensa = {0, 0};
 
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
     entrada->numeroPagina = -1;
@@ -33,16 +35,16 @@ void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, 
     entrada->quantidadeAcessos++;
 }
 
+void setarBitModificacao(InformacoesEntrada *entrada) {
+    entrada->bitModificacao = true;
+}
+
 void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, char tipoAcesso) {
     entrada->ultimoAcesso = ultimoAcesso;
     entrada->quantidadeAcessos++;
     if (tipoAcesso == 'W') {
         setarBitModificacao(entrada);
     }
-}
-
-void setarBitModificacao(InformacoesEntrada *entrada) {
-    entrada->bitModificacao = true;
 }
 
 void inicializarTabelaDensa(TabelaDensa *tabela, int capacidade) {
@@ -69,6 +71,8 @@ int MFUTabelaDensa(TabelaDensa *tabela) {
     int maxAcessos = -1;
 
     for (int i = 0; i < tabela->quantidadeEntradasPreenchidas; i++) {
+        estatisticasTabelaDensa.acessosTabela++;
+        
         if (tabela->entradas[i].informacoes.quantidadeAcessos > maxAcessos) {
             maxAcessos = tabela->entradas[i].informacoes.quantidadeAcessos;
             paginaMaisFrequente = i;
@@ -83,6 +87,8 @@ int LFUTabelaDensa(TabelaDensa *tabela) {
     int minAcessos = __INT_MAX__;
 
     for (int i = 0; i < tabela->quantidadeEntradasPreenchidas; i++) {
+        estatisticasTabelaDensa.acessosTabela++;
+
         if (tabela->entradas[i].informacoes.quantidadeAcessos < minAcessos) {
             minAcessos = tabela->entradas[i].informacoes.quantidadeAcessos;
             paginaMenosFrequente = i;
@@ -122,7 +128,7 @@ void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAc
     // Verificar se já existe uma entrada para a página
     for (int i = 0; i < tabela->quantidadeEntradasPreenchidas; i++) {
         tempo++;
-        simulador.informacaoAcessos.numeroAcessosMemoria++;
+        estatisticasTabelaDensa.acessosTabela++;
 
         if (tabela->entradas[i].informacoes.numeroPagina == numeroPagina) {
             // Página já está presente, atualizar as informações
@@ -146,8 +152,8 @@ void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAc
         }
 
         tempo++;
-        simulador.informacaoAcessos.numeroAcessosMemoria++;
-        simulador.informacaoAcessos.numeroPageFaults++;
+        estatisticasTabelaDensa.acessosTabela++;
+        simulador.estatisticasSimulador.numeroPageFaults++;
 
     } else {
         // Se a tabela está cheia, selecionar uma página para substituir
@@ -156,24 +162,27 @@ void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAc
         if (paginaParaSubstituir != -1) {
             // Substituir a página selecionada
             if (tabela->entradas[paginaParaSubstituir].informacoes.bitModificacao) {
-                simulador.informacaoAcessos.numeroPaginasSujasEscritas++;
+                simulador.estatisticasSimulador.numeroPaginasSujasEscritas++;
             }
 
             int quadroSubstituido = tabela->entradas[paginaParaSubstituir].informacoes.numeroQuadro;
             simulador.quadrosLivres[quadroSubstituido] = false;
             inicializarInformacoesEntrada(&tabela->entradas[paginaParaSubstituir].informacoes);
             preencherInformacoesEntrada(&tabela->entradas[paginaParaSubstituir].informacoes, numeroPagina, quadroSubstituido, tempo);
-            
+
             if (tipoAcesso == 'W') {
                 setarBitModificacao(&tabela->entradas[paginaParaSubstituir].informacoes);
             }
 
             tempo++;
-            simulador.informacaoAcessos.numeroAcessosMemoria++;
-            simulador.informacaoAcessos.numeroPageFaults++;
+            estatisticasTabelaDensa.acessosTabela++;
+            simulador.estatisticasSimulador.numeroPageFaults++;
 
         } else {
             printf("Erro: Não foi possível substituir uma página.\n");
         }
     }
+}
+
+int main () {
 }
