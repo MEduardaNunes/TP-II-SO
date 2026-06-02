@@ -3,13 +3,9 @@
 #include "../header/funcoesGerais.h"
 
 #include <stdio.h>
-#include <stdlib.h> 
-
-
-// Estruturas e funções auxiliares para manipulação da tabela densa
-extern int tempo;
-extern EspecificacaoSimulador simulador;
-extern EstatisticasTabela estatisticasTabelaInvertida;
+#include <stdlib.h>
+#include <limits.h>
+#include <string.h>
 
 // Funções para manipulação Tabela Invertida
 void inicializarEntradaTabelaInvertida(EntradaTabelaInvertida *entrada) {

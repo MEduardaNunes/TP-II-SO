@@ -34,21 +34,8 @@ int main () {
         }
     };
 
-    simulador.simuladorTabelaDensa.quadrosLivres = malloc(simulador.numeroQuadros * sizeof(bool));
-    simulador.simuladorTabelaInvertida.quadrosLivres = malloc(simulador.numeroQuadros * sizeof(bool));
-    if (simulador.simuladorTabelaDensa.quadrosLivres == NULL || simulador.simuladorTabelaInvertida.quadrosLivres == NULL) {
-        fprintf(stderr, "Erro de alocação de quadros livres\n");
-        return EXIT_FAILURE;
-    }
-
-    for (int i = 0; i < simulador.numeroQuadros; i++)
-    {
-        simulador.simuladorTabelaDensa.quadrosLivres[i] = true;
-        simulador.simuladorTabelaInvertida.quadrosLivres[i] = true;
-    }
 
     inicializarTabelaDensa(&simulador, simulador.numeroQuadros);
-
     acessarPaginaTabelaDensa(&simulador, 1, 'R');
     simulador.simuladorTabelaDensa.estatisticasSimulador.numeroReferenciasMemoria++;
     acessarPaginaTabelaDensa(&simulador, 2, 'R');
@@ -78,8 +65,5 @@ int main () {
     printf("Memória Consumida pela Tabela: %ld bytes\n", simulador.simuladorTabelaDensa.estatisticas.memoriaConsumida); 
 
     destruirTabelaDensa(&simulador);
-    free(simulador.simuladorTabelaDensa.quadrosLivres);
-    free(simulador.simuladorTabelaInvertida.quadrosLivres);
-
     return 0;
 }

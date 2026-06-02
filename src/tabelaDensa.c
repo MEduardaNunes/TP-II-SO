@@ -22,6 +22,11 @@ void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
         inicializarInformacoesEntrada(&tabela->entradas[i].informacoes);
     }
 
+    simulador->simuladorTabelaDensa.quadrosLivres = (bool*) malloc(capacidade * sizeof(bool));
+    for (int i = 0; i < capacidade; i++) {
+        simulador->simuladorTabelaDensa.quadrosLivres[i] = true;
+    }
+
     tabela->quantidadeEntradasPreenchidas = 0;
     tabela->capacidade = capacidade;
     simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaDensa);
@@ -29,8 +34,13 @@ void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
 
 void destruirTabelaDensa(EspecificacaoSimulador *simulador) {
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
+
     free(tabela->entradas);
     tabela->entradas = NULL;
+    free(simulador->simuladorTabelaDensa.quadrosLivres);
+    simulador->simuladorTabelaDensa.quadrosLivres = NULL;
+    tabela->quantidadeEntradasPreenchidas = 0;
+    tabela->capacidade = 0;
 }
 
 
