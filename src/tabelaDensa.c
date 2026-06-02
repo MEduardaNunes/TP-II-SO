@@ -31,7 +31,6 @@ void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
     for (int i = 0; i < capacidade; i++) {
         simulador->simuladorTabelaDensa.quadrosLivres[i] = true;
     }
-    
 
     //Inicializando tempo
     simulador->simuladorTabelaDensa.tempo = 0;
@@ -153,17 +152,16 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaDensa.estatisticas;
     int *tempo = &simulador->simuladorTabelaDensa.tempo;
+    (*tempo)++;
     
     // Verificar se já existe uma entrada para a página
     for (int i = 0; i < tabela->quantidadeEntradasPreenchidas; i++) {
         InformacoesEntrada *entrada_i = &tabela->entradas[i].informacoes;
-        (*tempo)++;
         incrementarAcessosTabela(estatisticas);
 
         if (entrada_i->numeroPagina == numeroPagina) {
             // Página já está presente, atualizar as informações
             atualizarInformacoesEntrada(entrada_i, *tempo, tipoAcesso);
-            (*tempo)++;
             return;
         }
     }
@@ -177,7 +175,7 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
         if (quadroLivre != -1) {
             quadrosLivres[quadroLivre] = false;
             adicionarEntradaTabelaDensa(simulador, numeroPagina, quadroLivre, tipoAcesso);
-            (*tempo)++;
+
             incrementarAcessosTabela(estatisticas);
             incrementarPageFaults(estatisticas);
 
@@ -202,7 +200,6 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
             quadrosLivres[quadroSubstituido] = false;
             substituirEntradaTabelaDensa(simulador, paginaParaSubstituir, numeroPagina, quadroSubstituido, tipoAcesso);
 
-            (*tempo)++;
             incrementarAcessosTabela(estatisticas);
             incrementarPageFaults(estatisticas);
 

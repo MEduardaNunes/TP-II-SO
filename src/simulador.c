@@ -3,4 +3,3 @@
 #include <string.h>
 
 #include "../header/simulador.h"
-

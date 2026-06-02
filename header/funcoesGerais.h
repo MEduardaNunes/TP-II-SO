@@ -13,11 +13,11 @@ typedef struct {
     int quantidadeAcessos;
 } InformacoesEntrada;
 
-int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros);
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada);
 void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso);
 void setarBitModificacao(InformacoesEntrada *entrada); 
 void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, char tipoAcesso);
+int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros);
 
 
 // Estrutura estatísticas da tabela de páginas

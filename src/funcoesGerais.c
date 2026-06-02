@@ -1,15 +1,5 @@
 #include "../header/funcoesGerais.h"
 
-int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros) {
-    for (int i = 0; i < numeroQuadros; i++) {
-        if (quadrosLivres[i]) {
-            return i;
-        }
-    }
-    return -1; // Retorna -1 se não houver quadros livres
-}
-
-
 // Funções para manipulação Entrada
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
     entrada->numeroPagina = -1;
@@ -39,6 +29,17 @@ void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, 
         setarBitModificacao(entrada);
     }
 }
+
+int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros) {
+    for (int i = 0; i < numeroQuadros; i++) {
+        if (quadrosLivres[i]) {
+            return i;
+        }
+    }
+    return -1; // Retorna -1 se não houver quadros livres
+}
+
+// Funções das estatísticas
 
 void inicializarEstatisticasTabela(EstatisticasTabela *estatisticas) {
     estatisticas->numeroReferenciasMemoria = 0;
