@@ -4,6 +4,3 @@
 
 #include "../header/simulador.h"
 
-void incrementarAcessosTabela(EstatisticasTabela *estatisticas) {
-    estatisticas->acessosTabela++;
-}

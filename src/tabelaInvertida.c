@@ -13,7 +13,8 @@ void inicializarEntradaTabelaInvertida(EntradaTabelaInvertida *entrada) {
     entrada->proximo = NULL;
 }
 
-void inicializarTabelaInvertida(TabelaInvertida *tabela, int capacidade) {
+void inicializarTabelaInvertida(EspecificacaoSimulador *simulador, int capacidade) {
+    TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     tabela->entradas = (EntradaTabelaInvertida*) malloc(capacidade * sizeof(EntradaTabelaInvertida));
     if (tabela->entradas == NULL) {
         fprintf(stderr, "Erro de alocação\n");
@@ -23,10 +24,14 @@ void inicializarTabelaInvertida(TabelaInvertida *tabela, int capacidade) {
     for (int i = 0; i < capacidade; i++) {
         inicializarEntradaTabelaInvertida(&tabela->entradas[i]);
     }
+
+    simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaInvertida);
     tabela->capacidade = capacidade;
 }
 
-void destruirTabelaInvertida(TabelaInvertida *tabela) {
+void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
+    TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
+
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
         while (entrada != NULL) {

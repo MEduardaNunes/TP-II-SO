@@ -10,6 +10,7 @@
 
 // Funções para manipulação Tabela Densa
 void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
+    // Inicializando a tabela densa
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
     tabela->entradas = (EntradaTabelaDensa*) malloc(capacidade * sizeof(EntradaTabelaDensa));
 
@@ -22,13 +23,21 @@ void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
         inicializarInformacoesEntrada(&tabela->entradas[i].informacoes);
     }
 
+    tabela->quantidadeEntradasPreenchidas = 0;
+    tabela->capacidade = capacidade;
+
+    // Inicializando o vetor de quadros livres
     simulador->simuladorTabelaDensa.quadrosLivres = (bool*) malloc(capacidade * sizeof(bool));
     for (int i = 0; i < capacidade; i++) {
         simulador->simuladorTabelaDensa.quadrosLivres[i] = true;
     }
+    
 
-    tabela->quantidadeEntradasPreenchidas = 0;
-    tabela->capacidade = capacidade;
+    //Inicializando tempo
+    simulador->simuladorTabelaDensa.tempo = 0;
+
+    //Inicializando estatísticas
+    inicializarEstatisticasTabela(&simulador->simuladorTabelaDensa.estatisticas);
     simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaDensa);
 }
 
@@ -143,7 +152,6 @@ void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int pos, in
 void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaDensa.estatisticas;
-    EstatisticasSimulador *estatisticasSimulador = &simulador->simuladorTabelaDensa.estatisticasSimulador;
     int *tempo = &simulador->simuladorTabelaDensa.tempo;
     
     // Verificar se já existe uma entrada para a página
@@ -171,7 +179,7 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
             adicionarEntradaTabelaDensa(simulador, numeroPagina, quadroLivre, tipoAcesso);
             (*tempo)++;
             incrementarAcessosTabela(estatisticas);
-            estatisticasSimulador->numeroPageFaults++;
+            incrementarPageFaults(estatisticas);
 
         } else {
             printf("Erro: Não há quadros livres disponíveis.\n");
@@ -187,7 +195,7 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
             InformacoesEntrada *entrada_substituir = &tabela->entradas[paginaParaSubstituir].informacoes;
 
             if (entrada_substituir->bitModificacao) {
-                estatisticasSimulador->numeroPaginasSujasEscritas++;
+                incrementarPaginasSujasEscritas(estatisticas);
             }
 
             int quadroSubstituido = entrada_substituir->numeroQuadro;
@@ -196,7 +204,7 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
 
             (*tempo)++;
             incrementarAcessosTabela(estatisticas);
-            estatisticasSimulador->numeroPageFaults++;
+            incrementarPageFaults(estatisticas);
 
         } else {
             printf("Erro: Não foi possível substituir uma página.\n");

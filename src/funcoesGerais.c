@@ -39,3 +39,32 @@ void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, 
         setarBitModificacao(entrada);
     }
 }
+
+void inicializarEstatisticasTabela(EstatisticasTabela *estatisticas) {
+    estatisticas->numeroReferenciasMemoria = 0;
+    estatisticas->numeroPageFaults = 0;
+    estatisticas->numeroPaginasSujasEscritas = 0;
+    estatisticas->acessosTabela = 0;
+    estatisticas->memoriaConsumida = 0;
+}
+
+
+void incrementarAcessosTabela(EstatisticasTabela *estatisticas) {
+    estatisticas->acessosTabela++;
+}
+
+void incrementarReferenciasMemoria(EstatisticasTabela *estatisticas) {
+    estatisticas->numeroReferenciasMemoria++;
+}
+
+void incrementarPageFaults(EstatisticasTabela *estatisticas) {
+    estatisticas->numeroPageFaults++;
+}
+
+void incrementarPaginasSujasEscritas(EstatisticasTabela *estatisticas) {
+    estatisticas->numeroPaginasSujasEscritas++;
+}
+
+void incrementarMemoriaConsumida(EstatisticasTabela *estatisticas, long quantidade) {
+    estatisticas->memoriaConsumida += quantidade;
+}

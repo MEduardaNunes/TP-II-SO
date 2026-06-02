@@ -19,4 +19,21 @@ void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, 
 void setarBitModificacao(InformacoesEntrada *entrada); 
 void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, char tipoAcesso);
 
+
+// Estrutura estatísticas da tabela de páginas
+typedef struct {
+    long numeroReferenciasMemoria;
+    long numeroPageFaults;
+    long numeroPaginasSujasEscritas;
+    long acessosTabela;
+    long memoriaConsumida;
+} EstatisticasTabela;
+
+void inicializarEstatisticasTabela(EstatisticasTabela *estatisticas);
+void incrementarAcessosTabela(EstatisticasTabela *estatisticas);
+void incrementarReferenciasMemoria(EstatisticasTabela *estatisticas);
+void incrementarPageFaults(EstatisticasTabela *estatisticas);
+void incrementarPaginasSujasEscritas(EstatisticasTabela *estatisticas);
+void incrementarMemoriaConsumida(EstatisticasTabela *estatisticas, long quantidade);
+
 #endif

@@ -11,30 +11,12 @@
 #include <stdbool.h>
 
 
-// Estrutura para armazenar as informações de acessos à memória
-typedef struct {
-    long numeroReferenciasMemoria;
-    long numeroPageFaults;
-    long numeroPaginasSujasEscritas;
-} EstatisticasSimulador;
-
-// Estrutura estatísticas da tabela de páginas
-typedef struct {
-    long acessosTabela;
-    long memoriaConsumida;
-} EstatisticasTabela;
-
-void inicializarEstatisticasTabela(EstatisticasTabela *estatisticas);
-void incrementarAcessosTabela(EstatisticasTabela *estatisticas);
-
-
 // Estruturas para o simulador das diferentes tabelas de páginas
 typedef struct{
     TabelaDensa tabela;
     bool *quadrosLivres;
     int tempo;
     EstatisticasTabela estatisticas;
-    EstatisticasSimulador estatisticasSimulador;
 } SimuladorTabelaDensa;
 
 typedef struct{
@@ -42,7 +24,6 @@ typedef struct{
     bool *quadrosLivres;
     int tempo;
     EstatisticasTabela estatisticas;
-    EstatisticasSimulador estatisticasSimulador;
 } SimuladorTabelaInvertida;
 
 typedef struct{
@@ -50,7 +31,6 @@ typedef struct{
     bool *quadrosLivres;
     int tempo;
     EstatisticasTabela estatisticas;
-    EstatisticasSimulador estatisticasSimulador;
 } SimuladorTabelaHierarquica2;
 
 typedef struct{
@@ -58,7 +38,6 @@ typedef struct{
     bool *quadrosLivres;
     int tempo;
     EstatisticasTabela estatisticas;
-    EstatisticasSimulador estatisticasSimulador;
 } SimuladorTabelaHierarquica3;
 
 
