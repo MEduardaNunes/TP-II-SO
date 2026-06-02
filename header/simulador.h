@@ -2,11 +2,13 @@
 #define SIMULADOR_H
 
 #include "funcoesGerais.h"
+#include "tabelaDensa.h"
+#include "tabelaInvertida.h"
+#include "tabelaHierarquica2.h"
+#include "tabelaHierarquica3.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
 
 
 // Estrutura para armazenar as informações de acessos à memória
@@ -16,68 +18,67 @@ typedef struct {
     long numeroPaginasSujasEscritas;
 } EstatisticasSimulador;
 
-// Estrutura da especificação do simulador
+// Estrutura estatísticas da tabela de páginas
 typedef struct {
+    long acessosTabela;
+    long memoriaConsumida;
+} EstatisticasTabela;
+
+void inicializarEstatisticasTabela(EstatisticasTabela *estatisticas);
+void incrementarAcessosTabela(EstatisticasTabela *estatisticas);
+
+
+// Estruturas para o simulador das diferentes tabelas de páginas
+typedef struct{
+    TabelaDensa tabela;
+    bool *quadrosLivres;
+    int tempo;
+    EstatisticasTabela estatisticas;
+    EstatisticasSimulador estatisticasSimulador;
+} SimuladorTabelaDensa;
+
+typedef struct{
+    TabelaInvertida tabela;
+    bool *quadrosLivres;
+    int tempo;
+    EstatisticasTabela estatisticas;
+    EstatisticasSimulador estatisticasSimulador;
+} SimuladorTabelaInvertida;
+
+typedef struct{
+    TabelaHierarquica_2 tabela;
+    bool *quadrosLivres;
+    int tempo;
+    EstatisticasTabela estatisticas;
+    EstatisticasSimulador estatisticasSimulador;
+} SimuladorTabelaHierarquica2;
+
+typedef struct{
+    TabelaHierarquica_3 tabela;
+    bool *quadrosLivres;
+    int tempo;
+    EstatisticasTabela estatisticas;
+    EstatisticasSimulador estatisticasSimulador;
+} SimuladorTabelaHierarquica3;
+
+
+// Estrutura da especificação do simulador geral
+typedef struct EspecificacaoSimulador {
+    // Parâmetros de configuração do simulador
     int numeroPaginas;
     int numeroQuadros;
     int tamanhoPagina;
     int tamanhoMemoria;
     char* politicaSubstituicao;
     char* tabelaDePaginas;
-    bool *quadrosLivres;
-    EstatisticasSimulador estatisticasSimulador;
+    int tempo;
+
+    // Estruturas de dados para as tabelas de páginas
+    SimuladorTabelaDensa simuladorTabelaDensa;
+    SimuladorTabelaInvertida simuladorTabelaInvertida;
+    SimuladorTabelaHierarquica2 simuladorTabelaHierarquica2;
+    SimuladorTabelaHierarquica3 simuladorTabelaHierarquica3;
 } EspecificacaoSimulador;
 
-
-// Estrutura da Tabela de Páginas Invertida
-typedef struct EntradaTabelaInvertida {
-    InformacoesEntrada informacoes;
-    struct EntradaTabelaInvertida* proximo;
-} EntradaTabelaInvertida;
-
-typedef struct {
-    EntradaTabelaInvertida* entradas;
-    int capacidade;
-} TabelaInvertida;
-
-
-// Estrutura da Tabela de Páginas Hierárquica de dois níveis
-typedef struct {
-    InformacoesEntrada informacoes;
-} EntradaTabelaHierarquicaNivel2_2;
-
-typedef struct {
-    EntradaTabelaHierarquicaNivel2_2* entradas;
-    int quantidadeEntradasPreenchidas;
-    int capacidadeEntradasNivel1;
-} EntradaTabelaHierarquicaNivel1_2;
-
-typedef struct {
-    EntradaTabelaHierarquicaNivel1_2 tabelaBase;
-    int quantidadeEntradasPreenchidas;
-} TabelaHierarquica_2;
-
-
-// Estrutura da Tabela de Páginas Hierárquica de três níveis
-typedef struct {
-    InformacoesEntrada informacoes;
-} EntradaTabelaHierarquicaNivel3_3;
-
-typedef struct {
-    EntradaTabelaHierarquicaNivel3_3* entradas;
-    int quantidadeEntradasPreenchidas;
-    int capacidadeEntradasNivel2;
-} EntradaTabelaHierarquicaNivel2_3;
-
-typedef struct {
-    EntradaTabelaHierarquicaNivel2_3* entradas;
-    int quantidadeEntradasPreenchidas;
-    int capacidadeEntradasNivel1;
-} EntradaTabelaHierarquicaNivel1_3;
-
-typedef struct {
-    EntradaTabelaHierarquicaNivel1_3 tabelaBase;
-    int quantidadeEntradasPreenchidas;
-} TabelaHierarquica_3;
 
 #endif

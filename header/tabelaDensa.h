@@ -2,6 +2,9 @@
 #define TABELADENSA_H
 
 #include "funcoesGerais.h"
+
+typedef struct EspecificacaoSimulador EspecificacaoSimulador;
+
 // Estrutura da Tabela de Página densa
 typedef struct {
     InformacoesEntrada informacoes;
@@ -13,14 +16,9 @@ typedef struct {
     int capacidade;
 } TabelaDensa;
 
-void inicializarTabelaDensa(TabelaDensa *tabela, int capacidade);
-void destruirTabelaDensa(TabelaDensa *tabela);
-void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAcesso);
-int RANTabelaDensa(TabelaDensa *tabela);
-int LRUTabelaDensa(TabelaDensa *tabela);
-int MFUTabelaDensa(TabelaDensa *tabela);
-int LFUTabelaDensa(TabelaDensa *tabela);
-int selecionaPaginaParaSubstituirTabelaDensa(TabelaDensa *tabela, char *politicaSubstituicao);
-void acessarPaginaTabelaDensa(TabelaDensa *tabela, int numeroPagina, char tipoAcesso);
+// Protótipos das funções para manipulação da tabela densa
+void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade);
+void destruirTabelaDensa(EspecificacaoSimulador *simulador);
+void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso);
 
 #endif

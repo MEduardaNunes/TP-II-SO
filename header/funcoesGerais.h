@@ -13,12 +13,6 @@ typedef struct {
     int quantidadeAcessos;
 } InformacoesEntrada;
 
-// Estrutura estatísticas da tabela de páginas
-typedef struct {
-    long acessosTabela;
-    long memoriaConsumida;
-} EstatisticasTabela;
-
 int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros);
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada);
 void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso);
