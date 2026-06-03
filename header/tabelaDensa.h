@@ -8,11 +8,11 @@ typedef struct EspecificacaoSimulador EspecificacaoSimulador;
 // Estrutura da Tabela de Página densa
 typedef struct {
     InformacoesEntrada informacoes;
+    bool valido;
 } EntradaTabelaDensa;
 
 typedef struct {
     EntradaTabelaDensa* entradas;
-    int quantidadeEntradasPreenchidas;
     int capacidade;
 } TabelaDensa;
 

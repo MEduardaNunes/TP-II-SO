@@ -7,92 +7,78 @@
 #include <stdio.h>
 #include <limits.h>
 
+void executarTesteCompleto(EspecificacaoSimulador *simulador, bool ehTabelaDensa) {
+    printf("\n--- INICIANDO TESTE DE ESTRESSE: %s ---\n", ehTabelaDensa ? "TABELA DENSA" : "TABELA INVERTIDA");
+
+    // Sequência de acesso (Página, Tipo de Acesso)
+    // 1. Enchendo a memória (Capacidade: 4 quadros)
+    // 2. Acesso a página que já está na memória (Hit)
+    // 3. Escrita que suja uma página
+    // 4. Substituição forçada
+    
+    int paginas[] = {1, 2, 3, 4, 2, 5, 1, 6, 2, 3};
+    char tipos[]  = {'R', 'W', 'R', 'R', 'R', 'R', 'W', 'R', 'W', 'R'};
+    int totalAcessos = 10;
+
+    for (int i = 0; i < totalAcessos; i++) {
+        if (ehTabelaDensa) {
+            acessarPaginaTabelaDensa(simulador, paginas[i], tipos[i]);
+        } else {
+            acessarPaginaTabelaInvertida(simulador, paginas[i], tipos[i]);
+        }
+        
+        // Simula a contagem global de referências
+        if (ehTabelaDensa) {
+            incrementarReferenciasMemoria(&simulador->simuladorTabelaDensa.estatisticas);
+        } else {
+            incrementarReferenciasMemoria(&simulador->simuladorTabelaInvertida.estatisticas);
+        }
+    }
+
+    // Exibição dos resultados
+    EstatisticasTabela *estat = ehTabelaDensa ? &simulador->simuladorTabelaDensa.estatisticas : &simulador->simuladorTabelaInvertida.estatisticas;
+    printf("Acessos à Memória: %ld\n", estat->numeroReferenciasMemoria);
+    printf("Acessos à tabela: %ld\n", estat->acessosTabela);
+    printf("Page Faults: %ld\n", estat->numeroPageFaults);
+    printf("Páginas Sujas Escritas: %ld\n", estat->numeroPaginasSujasEscritas);
+    printf("Memória Consumida: %ld bytes\n", estat->memoriaConsumida);
+}
+
 
 int main () {
     EspecificacaoSimulador simulador = {
+        .numeroPaginas = 8,
         .numeroQuadros = 4,
         .politicaSubstituicao = "MFU",
         .simuladorTabelaDensa = {
             .tempo = 0,
+            .numeroQuadroOcupados = 0,
             .estatisticas = {0, 0},
         },
         .simuladorTabelaInvertida = {
             .tempo = 0,
+            .numeroQuadroOcupados = 0,
             .estatisticas = {0, 0},
         },
         .simuladorTabelaHierarquica2 = {
             .tempo = 0,
+            .numeroQuadroOcupados = 0,
             .estatisticas = {0, 0},
         },
         .simuladorTabelaHierarquica3 = {
             .tempo = 0,
+            .numeroQuadroOcupados = 0,
             .estatisticas = {0, 0},
         }
     };
 
+    inicializarTabelaDensa(&simulador, simulador.numeroPaginas);
+    inicializarTabelaInvertida(&simulador, simulador.numeroQuadros);
 
-    inicializarTabelaDensa(&simulador, simulador.numeroQuadros);
-    acessarPaginaTabelaDensa(&simulador, 1, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 2, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 3, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 4, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 5, 'R'); // Isso deve causar um page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 6, 'W'); // Acessa a página 1 novamente, agora para escrita
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 7, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 7, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 8, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 3, 'W'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    acessarPaginaTabelaDensa(&simulador, 4, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaDensa.estatisticas);
-    printf("Número de Acessos à Memória: %ld\n", simulador.simuladorTabelaDensa.estatisticas.numeroReferenciasMemoria);
-    printf("Número de Page Faults: %ld\n", simulador.simuladorTabelaDensa.estatisticas.numeroPageFaults);
-    printf("Número de Páginas Sujas Escritas: %ld\n", simulador.simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
-    printf("Número de Acessos à Tabela: %ld\n", simulador.simuladorTabelaDensa.estatisticas.acessosTabela);
-    printf("Memória Consumida pela Tabela: %ld bytes\n", simulador.simuladorTabelaDensa.estatisticas.memoriaConsumida); 
-    printf("Tempo total gasto: %d\n", simulador.simuladorTabelaDensa.tempo);
+    executarTesteCompleto(&simulador, 1);
+    executarTesteCompleto(&simulador, 0);
 
     destruirTabelaDensa(&simulador);
-
-    inicializarTabelaInvertida(&simulador, simulador.numeroQuadros);
-    acessarPaginaTabelaInvertida(&simulador, 1, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 2, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 3, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 4, 'R');
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 5, 'R'); // Isso deve causar um page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 6, 'W'); // Acessa a página 1 novamente, agora para escrita
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 7, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 7, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 8, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 3, 'W'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    acessarPaginaTabelaInvertida(&simulador, 4, 'R'); // Isso deve causar outro page fault e substituir uma página
-    incrementarReferenciasMemoria(&simulador.simuladorTabelaInvertida.estatisticas);
-    printf("Número de Acessos à Memória: %ld\n", simulador.simuladorTabelaInvertida.estatisticas.numeroReferenciasMemoria);
-    printf("Número de Page Faults: %ld\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults);
-    printf("Número de Páginas Sujas Escritas: %ld\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
-    printf("Número de Acessos à Tabela: %ld\n", simulador.simuladorTabelaInvertida.estatisticas.acessosTabela);
-    printf("Memória Consumida pela Tabela: %ld bytes\n", simulador.simuladorTabelaInvertida.estatisticas.memoriaConsumida); 
-    printf("Tempo total gasto: %d\n", simulador.simuladorTabelaInvertida.tempo);
-
     destruirTabelaInvertida(&simulador);
     return 0;
 }

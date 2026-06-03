@@ -15,6 +15,7 @@
 typedef struct{
     TabelaDensa tabela;
     bool *quadrosLivres;
+    int numeroQuadroOcupados;
     int tempo;
     EstatisticasTabela estatisticas;
 } SimuladorTabelaDensa;
@@ -22,6 +23,7 @@ typedef struct{
 typedef struct{
     TabelaInvertida tabela;
     bool *quadrosLivres;
+    int numeroQuadroOcupados;
     int tempo;
     EstatisticasTabela estatisticas;
 } SimuladorTabelaInvertida;
@@ -29,6 +31,7 @@ typedef struct{
 typedef struct{
     TabelaHierarquica_2 tabela;
     bool *quadrosLivres;
+    int numeroQuadroOcupados;
     int tempo;
     EstatisticasTabela estatisticas;
 } SimuladorTabelaHierarquica2;
@@ -36,6 +39,7 @@ typedef struct{
 typedef struct{
     TabelaHierarquica_3 tabela;
     bool *quadrosLivres;
+    int numeroQuadroOcupados;
     int tempo;
     EstatisticasTabela estatisticas;
 } SimuladorTabelaHierarquica3;

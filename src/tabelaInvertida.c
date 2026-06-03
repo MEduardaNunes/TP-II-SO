@@ -192,6 +192,7 @@ void substituirEntradaTabelaInvertida(EspecificacaoSimulador *simulador, Localiz
     EntradaTabelaInvertida *atual = &tabela->entradas[tupla.indiceTabela];
     for (int k = 0; k < tupla.profundidadeLista; k++) {
         atual = atual->proximo;
+        incrementarAcessosTabela(estatisticas);
     }
 
     if (atual->informacoes.bitModificacao) {
