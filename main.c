@@ -174,8 +174,8 @@ int main (int argc, char *argv[]) {
     printf("Tamanho da memoria: %u KB\n", simulador.tamanhoMemoria);
     printf("Tamanho das paginas: %u KB\n", simulador.tamanhoPagina);
     printf("Tecnica de reposicao: %s\n", simulador.politicaSubstituicao);
-    printf("Paginas lidas (Page Faults): %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults);
-    printf("Paginas escritas (Sujas): %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
+    printf("Paginas lidas: %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults);
+    printf("Paginas escritas: %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
 
     salvarResultadosDebug(&simulador, simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults, simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
 
