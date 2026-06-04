@@ -143,15 +143,26 @@ int main (int argc, char *argv[]) {
     EspecificacaoSimulador simulador = {0};
     lerArgumentosTerminal(argc, argv, &simulador);
     unsigned int deslocamento = calcularDeslocamento(simulador.tamanhoPagina);
+    unsigned int totalPaginasPossiveis = 1 << (32 - deslocamento);
 
     // inicialização da estrutura
-    simulador.tabelaDePaginas = "invertida";
     inicializarTabelaInvertida(&simulador, simulador.numeroQuadros);
-    
+    inicializarTabelaDensa(&simulador, totalPaginasPossiveis);
+
     FILE *file = fopen(simulador.arquivoLog, "r");
     if (!file) {
         printf("Erro ao abrir o arquivo: %s\n", simulador.arquivoLog);
         return 1;
+    }
+
+    // TEMPORARIO
+    FILE *fileDebugInv = NULL, *fileDebugDen = NULL;
+    if (simulador.modoDebugAtivo) {
+        char nome[150];
+        sprintf(nome, "resultados/debug_invertida_%s.txt", simulador.politicaSubstituicao);
+        fileDebugInv = fopen(nome, "w");
+        sprintf(nome, "resultados/debug_densa_%s.txt", simulador.politicaSubstituicao);
+        fileDebugDen = fopen(nome, "w");
     }
 
     unsigned int endereco;
@@ -164,14 +175,22 @@ int main (int argc, char *argv[]) {
 
         acessarPaginaTabelaInvertida(&simulador, numeroPagina, rw);
         simulador.simuladorTabelaInvertida.estatisticas.numeroReferenciasMemoria++;
-    
+        if (fileDebugInv) fprintf(fileDebugInv, "Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
+
         if (simulador.modoDebugAtivo) {
             printf("Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
         }
+
+        acessarPaginaTabelaDensa(&simulador, numeroPagina, rw);
+        simulador.simuladorTabelaDensa.estatisticas.numeroReferenciasMemoria++;
+        if (fileDebugDen) fprintf(fileDebugDen, "Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
     }
 
     fclose(file);
+    if (fileDebugInv) fclose(fileDebugInv); // TEMP
+    if (fileDebugDen) fclose(fileDebugDen); // TEMP
 
+    simulador.tabelaDePaginas = "invertida";
     printf("Executando o simulador...\n");
     printf("Arquivo de entrada: %s\n", simulador.arquivoLog);
     printf("Tamanho da memoria: %u KB\n", simulador.tamanhoMemoria);
@@ -179,36 +198,9 @@ int main (int argc, char *argv[]) {
     printf("Tecnica de reposicao: %s\n", simulador.politicaSubstituicao);
     printf("Paginas lidas: %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
-
     salvarResultadosDebug(&simulador, simulador.simuladorTabelaInvertida.estatisticas.numeroPageFaults, simulador.simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
     
-    destruirTabelaInvertida(&simulador);
-
     simulador.tabelaDePaginas = "densa";
-    unsigned int totalPaginasPossiveis = 1 << (32 - deslocamento); // capacidade da dens = numero total de paginas logicas possiveis
-    inicializarTabelaDensa(&simulador, totalPaginasPossiveis);
-
-    file = fopen(simulador.arquivoLog, "r");
-    if (!file) {
-        printf("Erro ao abrir o arquivo: %s\n", simulador.arquivoLog);
-        return 1;
-    }
-
-    if (simulador.modoDebugAtivo) printf("Iniciando leitura...\n");
-
-    while (fscanf(file, "%x %c", &endereco, &rw) == 2) {
-        unsigned int numeroPagina = extrairNumeroPagina(endereco, deslocamento);
-
-        acessarPaginaTabelaDensa(&simulador, numeroPagina, rw);
-        simulador.simuladorTabelaDensa.estatisticas.numeroReferenciasMemoria++;
-    
-        if (simulador.modoDebugAtivo) {
-            printf("Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
-        }
-    }
-
-    fclose(file);
-
     printf("Executando o simulador...\n");
     printf("Arquivo de entrada: %s\n", simulador.arquivoLog);
     printf("Tamanho da memoria: %u KB\n", simulador.tamanhoMemoria);
@@ -216,9 +208,9 @@ int main (int argc, char *argv[]) {
     printf("Tecnica de reposicao: %s\n", simulador.politicaSubstituicao);
     printf("Paginas lidas: %lu\n", simulador.simuladorTabelaDensa.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador.simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
-
     salvarResultadosDebug(&simulador, simulador.simuladorTabelaDensa.estatisticas.numeroPageFaults, simulador.simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
     
+    destruirTabelaInvertida(&simulador);
     destruirTabelaDensa(&simulador);
 
     return 0;
