@@ -1,17 +1,29 @@
+CC = gcc
+CFLAGS = -Wall -Wextra
+
+OBJS = obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o obj/main.o
+
+all: simulador
+
+simulador: $(OBJS)
+	$(CC) $(CFLAGS) -o simulador $(OBJS)
+
+obj/main.o: main.c
+	$(CC) $(CFLAGS) -c main.c -o obj/main.o
+
 obj/funcoesGerais.o: header/funcoesGerais.h src/funcoesGerais.c
-	gcc -c src/funcoesGerais.c -o obj/funcoesGerais.o
+	$(CC) $(CFLAGS) -c src/funcoesGerais.c -o obj/funcoesGerais.o
 
 obj/tabelaDensa.o: header/tabelaDensa.h src/tabelaDensa.c
-	gcc -c src/tabelaDensa.c -o obj/tabelaDensa.o
+	$(CC) $(CFLAGS) -c src/tabelaDensa.c -o obj/tabelaDensa.o
 
 obj/tabelaInvertida.o: header/tabelaInvertida.h src/tabelaInvertida.c
-	gcc -c src/tabelaInvertida.c -o obj/tabelaInvertida.o
+	$(CC) $(CFLAGS) -c src/tabelaInvertida.c -o obj/tabelaInvertida.o
 
 obj/simulador.o: header/simulador.h src/simulador.c
-	gcc -c src/simulador.c -o obj/simulador.o
+	$(CC) $(CFLAGS) -c src/simulador.c -o obj/simulador.o
 
-run: obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o main.c
-	gcc -o simulador obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o main.c
+run: simulador
 	./simulador
 
 clean:

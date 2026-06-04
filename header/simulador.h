@@ -53,8 +53,10 @@ typedef struct EspecificacaoSimulador {
     int tamanhoPagina;
     int tamanhoMemoria;
     char* politicaSubstituicao;
+    char *arquivoLog;
     char* tabelaDePaginas;
     int tempo;
+    bool modoDebugAtivo;
 
     // Estruturas de dados para as tabelas de páginas
     SimuladorTabelaDensa simuladorTabelaDensa;
