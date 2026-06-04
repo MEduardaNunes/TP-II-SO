@@ -25,19 +25,6 @@ void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade) {
     }
 
     tabela->capacidade = capacidade;
-
-    // Inicializando o vetor de quadros livres
-    simulador->simuladorTabelaDensa.quadrosLivres = (bool*) malloc(capacidade * sizeof(bool));
-    for (int i = 0; i < capacidade; i++) {
-        simulador->simuladorTabelaDensa.quadrosLivres[i] = true;
-    }
-
-    //Inicializando tempo
-    simulador->simuladorTabelaDensa.tempo = 0;
-
-    //Inicializando estatísticas
-    inicializarEstatisticasTabela(&simulador->simuladorTabelaDensa.estatisticas);
-    simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaDensa);
 }
 
 
@@ -48,6 +35,8 @@ void destruirTabelaDensa(EspecificacaoSimulador *simulador) {
     tabela->entradas = NULL;
     free(simulador->simuladorTabelaDensa.quadrosLivres);
     simulador->simuladorTabelaDensa.quadrosLivres = NULL;
+    free(simulador->simuladorTabelaDensa.paginasPorQuadro);
+    simulador->simuladorTabelaDensa.paginasPorQuadro = NULL;
     tabela->capacidade = 0;
 }
 
@@ -70,16 +59,17 @@ int MFUTabelaDensa(EspecificacaoSimulador *simulador) {
     int paginaMaisFrequente = -1;
     int maxAcessos = -1;
 
-    for (int i = 0; i < tabela->capacidade; i++) {
-        EntradaTabelaDensa *entrada_i = &tabela->entradas[i];
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
         incrementarAcessosTabela(estatisticas);
 
-        if (entrada_i->valido) {
-            if (entrada_i->informacoes.quantidadeAcessos > maxAcessos) {
-                maxAcessos = entrada_i->informacoes.quantidadeAcessos;
-                paginaMaisFrequente = i;
-         }
-        }   
+        if (pagina == -1) continue;
+
+        EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
+        if (entrada_i->valido && entrada_i->informacoes.quantidadeAcessos > maxAcessos) {
+            maxAcessos = entrada_i->informacoes.quantidadeAcessos;
+            paginaMaisFrequente = pagina;
+        }
     }
 
     return paginaMaisFrequente;
@@ -92,17 +82,17 @@ int LFUTabelaDensa(EspecificacaoSimulador *simulador) {
     int paginaMenosFrequente = -1;
     int minAcessos = __INT_MAX__;
 
-    for (int i = 0; i < tabela->capacidade; i++) {
-        EntradaTabelaDensa *entrada_i = &tabela->entradas[i];
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
         incrementarAcessosTabela(estatisticas);
 
-        if (entrada_i->valido) {
-            if (entrada_i->informacoes.quantidadeAcessos < minAcessos) {
-                minAcessos = entrada_i->informacoes.quantidadeAcessos;
-                paginaMenosFrequente = i;
-            }
+        if (pagina == -1) continue;
+
+        EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
+        if (entrada_i->valido && entrada_i->informacoes.quantidadeAcessos < minAcessos) {
+            minAcessos = entrada_i->informacoes.quantidadeAcessos;
+            paginaMenosFrequente = pagina;
         }
-     
     }
 
     return paginaMenosFrequente;
@@ -138,6 +128,8 @@ void adicionarEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPa
 
     preencherInformacoesEntrada(entradaInformacoes, numeroPagina, numeroQuadro, tempo);
     tabela->entradas[numeroPagina].valido = true;
+    simulador->simuladorTabelaDensa.quadrosLivres[numeroQuadro] = false;
+    simulador->simuladorTabelaDensa.paginasPorQuadro[numeroQuadro] = numeroPagina;
 }
 
 
@@ -159,12 +151,13 @@ void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroP
         incrementarPaginasSujasEscritas(&simulador->simuladorTabelaDensa.estatisticas);
 
     int numeroQuadro = entradaSubstituir->informacoes.numeroQuadro;
-    entrada->valido = true;
     entradaSubstituir->valido = false;
     entradaSubstituir->informacoes.numeroQuadro = -1;
+    simulador->simuladorTabelaDensa.paginasPorQuadro[numeroQuadro] = numeroPagina;
 
     inicializarInformacoesEntrada(&entrada->informacoes);
     preencherInformacoesEntrada(&entrada->informacoes, numeroPagina, numeroQuadro, tempo);
+    entrada->valido = true;
 }
 
 

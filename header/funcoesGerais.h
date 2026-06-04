@@ -7,7 +7,6 @@
 typedef struct {
     int numeroPagina;
     int numeroQuadro;
-    bool bitPresenca;
     bool bitModificacao;
     int ultimoAcesso;
     int quantidadeAcessos;
@@ -35,5 +34,9 @@ void incrementarReferenciasMemoria(EstatisticasTabela *estatisticas);
 void incrementarPageFaults(EstatisticasTabela *estatisticas);
 void incrementarPaginasSujasEscritas(EstatisticasTabela *estatisticas);
 void incrementarMemoriaConsumida(EstatisticasTabela *estatisticas, long quantidade);
+
+// Funções gerais do endereço
+unsigned int calcularDeslocamento(unsigned int tamanhoPagina);
+unsigned int extrairNumeroPagina(unsigned int endereco, unsigned int deslocamento);
 
 #endif

@@ -4,7 +4,6 @@
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
     entrada->numeroPagina = -1;
     entrada->numeroQuadro = -1;
-    entrada->bitPresenca = false;
     entrada->bitModificacao = false;
     entrada->ultimoAcesso = 0;
     entrada->quantidadeAcessos = 0;
@@ -13,7 +12,6 @@ void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
 void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso) {
     entrada->numeroPagina = numeroPagina;
     entrada->numeroQuadro = numeroQuadro;
-    entrada->bitPresenca = true;
     entrada->ultimoAcesso = ultimoAcesso;
     entrada->quantidadeAcessos++;
 }
@@ -68,4 +66,18 @@ void incrementarPaginasSujasEscritas(EstatisticasTabela *estatisticas) {
 
 void incrementarMemoriaConsumida(EstatisticasTabela *estatisticas, long quantidade) {
     estatisticas->memoriaConsumida += quantidade;
+}
+
+unsigned int calcularDeslocamento(unsigned int tamanhoPagina) {
+    unsigned int deslocamento = 0;
+    unsigned int temp = tamanhoPagina * 1024;
+    while (temp > 1) {
+        deslocamento++;
+        temp >>= 1; 
+    }
+    return deslocamento;
+}
+
+unsigned int extrairNumeroPagina(unsigned int endereco, unsigned int deslocamento) {
+    return endereco >> deslocamento;
 }

@@ -32,23 +32,6 @@ void inicializarTabelaInvertida(EspecificacaoSimulador *simulador, int capacidad
         inicializarEntradaTabelaInvertida(&tabela->entradas[i]);
     }
     tabela->capacidade = capacidade;
-
-    //Inicializando o vetor de quadros livres
-    simulador->simuladorTabelaInvertida.quadrosLivres = (bool*) malloc(capacidade * sizeof(bool));
-    if (simulador->simuladorTabelaInvertida.quadrosLivres == NULL) {
-        fprintf(stderr, "Erro de alocação de quadros livres\n");
-        exit(EXIT_FAILURE);
-    }
-
-    for (int i = 0; i < capacidade; i++) 
-        simulador->simuladorTabelaInvertida.quadrosLivres[i] = true;
-
-    //Inicializando tempo
-    simulador->simuladorTabelaInvertida.tempo = 0;
-
-    //Inicializando estatísticas
-    inicializarEstatisticasTabela(&simulador->simuladorTabelaInvertida.estatisticas);
-    simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaInvertida);
 }
 
 void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
@@ -87,7 +70,7 @@ LocalizacaoEntrada MFUTabelaInvertida(EspecificacaoSimulador * simulador) {
 
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
-        if (entrada->informacoes.quantidadeAcessos > maxAcessos) {
+        if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos > maxAcessos) {
             maxAcessos = entrada->informacoes.quantidadeAcessos;
             tuplaEntrada.indiceTabela = i;
             tuplaEntrada.profundidadeLista = 0;
@@ -98,7 +81,7 @@ LocalizacaoEntrada MFUTabelaInvertida(EspecificacaoSimulador * simulador) {
         while (entrada->proximo != NULL) {
             entrada = entrada->proximo;
 
-            if (entrada->informacoes.quantidadeAcessos > maxAcessos) {
+            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos > maxAcessos) {
                 maxAcessos = entrada->informacoes.quantidadeAcessos;
                 tuplaEntrada.indiceTabela = i;
                 tuplaEntrada.profundidadeLista = j;
@@ -119,7 +102,7 @@ LocalizacaoEntrada LFUTabelaInvertida(EspecificacaoSimulador * simulador) {
 
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
-        if (entrada->informacoes.quantidadeAcessos < minAcessos) {
+        if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos < minAcessos) {
             minAcessos = entrada->informacoes.quantidadeAcessos;
             tuplaEntrada.indiceTabela = i;
             tuplaEntrada.profundidadeLista = 0;
@@ -129,7 +112,7 @@ LocalizacaoEntrada LFUTabelaInvertida(EspecificacaoSimulador * simulador) {
         int j = 1;
         while (entrada->proximo != NULL) {
             entrada = entrada->proximo;
-            if (entrada->informacoes.quantidadeAcessos < minAcessos) {
+            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos < minAcessos) {
                 minAcessos = entrada->informacoes.quantidadeAcessos;
                 tuplaEntrada.indiceTabela = i;
                 tuplaEntrada.profundidadeLista = j;
