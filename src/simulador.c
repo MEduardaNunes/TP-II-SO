@@ -32,7 +32,31 @@ void inicializarSimuladorTabelaDensa(EspecificacaoSimulador *simulador) {
 }
 
 void inicializarSimuladorTabelaHierarquica2(EspecificacaoSimulador *simulador) {
+    inicializarTabelaHierarquica2(simulador);
 
+    // Alocação dos quadros livres
+    simulador->simuladorTabelaHierarquica2.quadrosLivres = (bool*) malloc(simulador->numeroQuadros * sizeof(bool));
+    if (simulador->simuladorTabelaHierarquica2.quadrosLivres == NULL){
+        fprintf(stderr, "Erro ao alocar quadrosLivres\n");
+        exit(1);
+    }
+
+    // Alocação das páginas por quadro
+    simulador->simuladorTabelaHierarquica2.paginasPorQuadro = (int*) malloc(simulador->numeroQuadros * sizeof(int));
+    if (simulador->simuladorTabelaHierarquica2.paginasPorQuadro == NULL){
+        fprintf(stderr, "Erro ao alocar paginasPorQuadro\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        simulador->simuladorTabelaHierarquica2.quadrosLivres[i] = true;
+        simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i] = -1;
+    }
+    simulador->simuladorTabelaHierarquica2.numeroQuadroOcupados = 0;
+    simulador->simuladorTabelaHierarquica2.tempo = 0;
+
+    inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica2.estatisticas);
+    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida = simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2);
 }
 
 void inicializarSimuladorTabelaHierarquica3(EspecificacaoSimulador *simulador) {
@@ -177,7 +201,9 @@ void rodarSimulador(EspecificacaoSimulador *simulador) {
 
         acessarPaginaTabelaInvertida(simulador, numeroPagina, rw);
         simulador->simuladorTabelaInvertida.estatisticas.numeroReferenciasMemoria++;
-    
+        
+        acessarPaginaTabelaHierarquica_2(simulador, numeroPagina, rw);
+        simulador->simuladorTabelaHierarquica2.estatisticas.numeroReferenciasMemoria++;
         // Modo debug
         if (simulador->modoDebugAtivo) {
             printf("Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
@@ -214,7 +240,15 @@ void imprimirResultadosTabelaDensa(EspecificacaoSimulador *simulador) {
 }
 
 void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
-
+    printf("TABELA HIERARQUICA 2 NIVEIS\n");
+    printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
+    printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
+    printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
+    printf("Tecnica de reposicao: %s\n", simulador->politicaSubstituicao);
+    printf("Page faults: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults);
+    printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
+    printf("\n");
+    salvarResultadosDebug(simulador, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
 }
 
 void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
