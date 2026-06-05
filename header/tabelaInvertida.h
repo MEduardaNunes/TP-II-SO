@@ -8,7 +8,7 @@ typedef struct EspecificacaoSimulador EspecificacaoSimulador;
 // Estrutura da Tabela de Páginas Invertida
 typedef struct EntradaTabelaInvertida {
     InformacoesEntrada informacoes;
-    struct EntradaTabelaInvertida* proximo;
+    bool valido;
 } EntradaTabelaInvertida;
 
 typedef struct {

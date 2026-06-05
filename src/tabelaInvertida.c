@@ -7,16 +7,10 @@
 #include <limits.h>
 #include <string.h>
 
-// Estrutura complementar
-typedef struct {
-    int indiceTabela;
-    int profundidadeLista;
-} LocalizacaoEntrada;
-
 // Funções para manipulação Tabela Invertida
 void inicializarEntradaTabelaInvertida(EntradaTabelaInvertida *entrada) {
     inicializarInformacoesEntrada(&entrada->informacoes);
-    entrada->proximo = NULL;
+    entrada->valido = false;
 }
 
 void inicializarTabelaInvertida(EspecificacaoSimulador *simulador, int capacidade) {
@@ -31,20 +25,13 @@ void inicializarTabelaInvertida(EspecificacaoSimulador *simulador, int capacidad
     for (int i = 0; i < capacidade; i++) {
         inicializarEntradaTabelaInvertida(&tabela->entradas[i]);
     }
+
     tabela->capacidade = capacidade;
 }
 
 void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
 
-    for (int i = 0; i < tabela->capacidade; i++) {
-        EntradaTabelaInvertida *entrada = tabela->entradas[i].proximo;
-        while (entrada != NULL) {
-            EntradaTabelaInvertida *temp = entrada;
-            entrada = entrada->proximo;
-            free(temp);
-        }
-    }
     free(tabela->entradas);
     tabela->entradas = NULL;
     
@@ -52,103 +39,76 @@ void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
     simulador->simuladorTabelaInvertida.quadrosLivres = NULL;
 }
 
-LocalizacaoEntrada RANTabelaInvertida(EspecificacaoSimulador * simulador) {
+int RANTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
 
 }
 
-LocalizacaoEntrada LRUTabelaInvertida(EspecificacaoSimulador * simulador) {
+int LRUTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
-    LocalizacaoEntrada tuplaEntrada = {-1, -1};
+    int index = -1;
     int minTempo = INT_MAX;
 
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
+        incrementarAcessosTabela(estatisticas);
 
-        int j = 1;
-        while (entrada->proximo != NULL) {
-            entrada = entrada->proximo;
-
-            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.ultimoAcesso < minTempo) {
-                minTempo = entrada->informacoes.ultimoAcesso;
-                tuplaEntrada.indiceTabela = i;
-                tuplaEntrada.profundidadeLista = j;
-            }
-            j++;
-            incrementarAcessosTabela(estatisticas);
+        if (!entrada->valido) continue;
+            
+        if (entrada->informacoes.ultimoAcesso < minTempo) {
+            minTempo = entrada->informacoes.ultimoAcesso;
+            index = i;
         }
     }
-    return tuplaEntrada;
+    return index;
 }
 
-LocalizacaoEntrada MFUTabelaInvertida(EspecificacaoSimulador * simulador) {
+int MFUTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
-    LocalizacaoEntrada tuplaEntrada = {-1, -1};
+    int index = -1;
     int maxAcessos = -1;
 
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
-        if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos > maxAcessos) {
-            maxAcessos = entrada->informacoes.quantidadeAcessos;
-            tuplaEntrada.indiceTabela = i;
-            tuplaEntrada.profundidadeLista = 0;
-        }
         incrementarAcessosTabela(estatisticas);
 
-        int j = 1;
-        while (entrada->proximo != NULL) {
-            entrada = entrada->proximo;
+        if(!entrada->valido) continue;
 
-            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos > maxAcessos) {
-                maxAcessos = entrada->informacoes.quantidadeAcessos;
-                tuplaEntrada.indiceTabela = i;
-                tuplaEntrada.profundidadeLista = j;
-            }
-            incrementarAcessosTabela(estatisticas);
-            j++;
-        }
+        if (entrada->informacoes.quantidadeAcessos > maxAcessos) {
+            maxAcessos = entrada->informacoes.quantidadeAcessos;
+            index = i;
+        }  
     }
     
-    return tuplaEntrada;
+    return index;
 }
 
-LocalizacaoEntrada LFUTabelaInvertida(EspecificacaoSimulador * simulador) {
+int LFUTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
-    LocalizacaoEntrada tuplaEntrada = {-1, -1};
+    int index = -1;
     int minAcessos = INT_MAX;
 
     for (int i = 0; i < tabela->capacidade; i++) {
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
-        if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos < minAcessos) {
-            minAcessos = entrada->informacoes.quantidadeAcessos;
-            tuplaEntrada.indiceTabela = i;
-            tuplaEntrada.profundidadeLista = 0;
-        }
         incrementarAcessosTabela(estatisticas);
+       
+        if(!entrada->valido) continue;
 
-        int j = 1;
-        while (entrada->proximo != NULL) {
-            entrada = entrada->proximo;
-            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.quantidadeAcessos < minAcessos) {
-                minAcessos = entrada->informacoes.quantidadeAcessos;
-                tuplaEntrada.indiceTabela = i;
-                tuplaEntrada.profundidadeLista = j;
-            }
-            incrementarAcessosTabela(estatisticas);
-            j++;
+        if (entrada->informacoes.quantidadeAcessos < minAcessos) {
+            minAcessos = entrada->informacoes.quantidadeAcessos;
+            index = i;
         }
     }
 
-    return tuplaEntrada;
+    return index;
 }
 
-LocalizacaoEntrada selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulador) {
+int selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     char* politicaSubstituicao = simulador->politicaSubstituicao;
-    LocalizacaoEntrada tuplaEntrada = {-1, -1};
 
     if (strcmp(politicaSubstituicao, "LRU") == 0) {
         return LRUTabelaInvertida(simulador);
@@ -163,48 +123,37 @@ LocalizacaoEntrada selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSim
         return LFUTabelaInvertida(simulador);
     }
 
-    return tuplaEntrada;
+    return -1;
 }
 
 void adicionarEntradaTabelaInvertida(EspecificacaoSimulador *simulador, int numeroPagina, int numeroQuadro, char tipoAcesso) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     int *tempo = &simulador->simuladorTabelaInvertida.tempo;
 
-    EntradaTabelaInvertida *novaEntrada = (EntradaTabelaInvertida*) malloc(sizeof(EntradaTabelaInvertida));
+    EntradaTabelaInvertida *entrada = &tabela->entradas[numeroQuadro];
+    preencherInformacoesEntrada(&entrada->informacoes, numeroPagina, numeroQuadro, *tempo);
+    entrada->valido = true;
+    simulador->simuladorTabelaInvertida.numeroQuadroOcupados++;
 
-    if (novaEntrada == NULL) {
-        fprintf(stderr, "Erro de alocação\n");
-        exit(EXIT_FAILURE);
-    }
-
-    inicializarEntradaTabelaInvertida(novaEntrada);
-    preencherInformacoesEntrada(&novaEntrada->informacoes, numeroPagina, numeroQuadro, *tempo);
-
-    int index = numeroPagina % tabela->capacidade;
-    novaEntrada->proximo = tabela->entradas[index].proximo;
-    tabela->entradas[index].proximo = novaEntrada;
-    simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida += sizeof(EntradaTabelaInvertida);
-
-    if (tipoAcesso == 'W') setarBitModificacao(&novaEntrada->informacoes);
+    if (tipoAcesso == 'W') setarBitModificacao(&entrada->informacoes);
 }
 
-void substituirEntradaTabelaInvertida(EspecificacaoSimulador *simulador, LocalizacaoEntrada tupla, int numeroPagina, char tipoAcesso) {
+void substituirEntradaTabelaInvertida(EspecificacaoSimulador *simulador, int index, int numeroPagina, char tipoAcesso) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
     
-    EntradaTabelaInvertida *atual = &tabela->entradas[tupla.indiceTabela];
-    for (int k = 0; k < tupla.profundidadeLista; k++) {
-        atual = atual->proximo;
-        incrementarAcessosTabela(estatisticas);
+    if (index < 0 || index >= tabela->capacidade) {
+        fprintf(stderr, "Erro: índice de substituição inválido para tabela invertida.\n");
+        return;
     }
 
-    if (atual->informacoes.bitModificacao) {
-        incrementarPaginasSujasEscritas(estatisticas);
-    }
+    EntradaTabelaInvertida *atual = &tabela->entradas[index];
+    if (atual->informacoes.bitModificacao) incrementarPaginasSujasEscritas(estatisticas);
 
     int quadroOriginal = atual->informacoes.numeroQuadro;
     inicializarInformacoesEntrada(&atual->informacoes);
     preencherInformacoesEntrada(&atual->informacoes, numeroPagina, quadroOriginal, simulador->simuladorTabelaInvertida.tempo);
+    atual->valido = true;
     
     if (tipoAcesso == 'W') setarBitModificacao(&atual->informacoes);
 }
@@ -215,34 +164,34 @@ void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, int numeroP
     int *tempo = &simulador->simuladorTabelaInvertida.tempo;
     (*tempo)++;
 
-    int index = numeroPagina % tabela->capacidade;
-
-    // Verificar se a página já existe na lista encadeada daquele índice
-    EntradaTabelaInvertida *entrada = &tabela->entradas[index];
-    while (entrada != NULL) {
+    // Verificar se a página já existe na tabela
+    for (int i = 0; i < tabela->capacidade; i++) {
+        EntradaTabelaInvertida *entrada = &tabela->entradas[i];
+        if (!entrada->valido) continue;
         if (entrada->informacoes.numeroPagina == numeroPagina) {
             atualizarInformacoesEntrada(&entrada->informacoes, *tempo, tipoAcesso);
+            incrementarAcessosTabela(estatisticas);
             return; // Encontrado!
         }
-        entrada = entrada->proximo;
     }
 
     // Página não encontrada: é um page fault
     incrementarPageFaults(estatisticas);
     
     // Verificar se há quadros livres na memória física
-    int numeroQuadro = achaPrimeiroQuadroLivre(simulador->simuladorTabelaInvertida.quadrosLivres, simulador->numeroQuadros);
+    int quadrosOcupados = simulador->simuladorTabelaInvertida.numeroQuadroOcupados;
 
-    if (numeroQuadro != -1) {
+    if (quadrosOcupados < simulador->numeroQuadros) {
         // Há RAM disponível, inserir sem substituir
+        int numeroQuadro = achaPrimeiroQuadroLivre(simulador->simuladorTabelaInvertida.quadrosLivres, simulador->numeroQuadros);
         simulador->simuladorTabelaInvertida.quadrosLivres[numeroQuadro] = false;
         adicionarEntradaTabelaInvertida(simulador, numeroPagina, numeroQuadro, tipoAcesso);
         incrementarAcessosTabela(estatisticas);
 
     } else {
         // Memória cheia: Substituir usando a política escolhida
-        LocalizacaoEntrada tupla = selecionaPaginaParaSubstituirTabelaInvertida(simulador);
-        substituirEntradaTabelaInvertida(simulador, tupla, numeroPagina, tipoAcesso);
+        int index = selecionaPaginaParaSubstituirTabelaInvertida(simulador);
+        substituirEntradaTabelaInvertida(simulador, index, numeroPagina, tipoAcesso);
         incrementarAcessosTabela(estatisticas);
     }
 }
