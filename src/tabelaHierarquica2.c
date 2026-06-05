@@ -95,13 +95,41 @@ void destruirTabelaHierarquica2(EspecificacaoSimulador *simulador) {
 
 
 int RANTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
-    TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
-    
+    int paginaVitima = -1;
+
+    while (paginaVitima == -1) {
+        int quadroRandom = rand() % simulador->numeroQuadros;
+        paginaVitima = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[quadroRandom];
+    }
+
+    return paginaVitima;
 }
 
 int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
+
+    int paginaMaisAntiga = -1;
+    int minTempo = __INT_MAX__;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
+        incrementarAcessosTabela(estatisticas);
+
+        if (pagina == -1) continue;
+
+        int p1, p2;
+        calcularIndicesHierarquicos(simulador, pagina, &p1, &p2);
+
+        EntradaTabelaHierarquicaNivel2_2 *entrada_i = &tabela->tabelaExterna[p1].tabelaInterna[p2];
+        
+        if (entrada_i->valido && entrada_i->informacoes.ultimoAcesso < minTempo) {
+            minTempo = entrada_i->informacoes.ultimoAcesso;
+            paginaMaisAntiga = pagina; 
+        }
+    }
+
+    return paginaMaisAntiga;
 }
 
 int MFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
