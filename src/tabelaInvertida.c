@@ -59,7 +59,27 @@ LocalizacaoEntrada RANTabelaInvertida(EspecificacaoSimulador * simulador) {
 
 LocalizacaoEntrada LRUTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
-    
+    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
+    LocalizacaoEntrada tuplaEntrada = {-1, -1};
+    int minTempo = INT_MAX;
+
+    for (int i = 0; i < tabela->capacidade; i++) {
+        EntradaTabelaInvertida *entrada = &tabela->entradas[i];
+
+        int j = 1;
+        while (entrada->proximo != NULL) {
+            entrada = entrada->proximo;
+
+            if (entrada->informacoes.numeroPagina != -1 && entrada->informacoes.ultimoAcesso < minTempo) {
+                minTempo = entrada->informacoes.ultimoAcesso;
+                tuplaEntrada.indiceTabela = i;
+                tuplaEntrada.profundidadeLista = j;
+            }
+            j++;
+            incrementarAcessosTabela(estatisticas);
+        }
+    }
+    return tuplaEntrada;
 }
 
 LocalizacaoEntrada MFUTabelaInvertida(EspecificacaoSimulador * simulador) {

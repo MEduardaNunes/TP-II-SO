@@ -46,10 +46,26 @@ int RANTabelaDensa(EspecificacaoSimulador *simulador) {
     
 }
 
-
 int LRUTabelaDensa(EspecificacaoSimulador *simulador) {
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
+    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaDensa.estatisticas;
 
+    int paginaMaisAntiga = -1;
+    int minTempo = __INT_MAX__;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
+        incrementarAcessosTabela(estatisticas);
+        
+        if (pagina == -1) continue;
+
+        EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
+        if (entrada_i->valido && entrada_i->informacoes.ultimoAcesso < minTempo) {
+            minTempo = entrada_i->informacoes.ultimoAcesso;
+            paginaMaisAntiga = pagina; 
+        }
+    }
+    return paginaMaisAntiga;
 }
 
 

@@ -9,7 +9,7 @@ typedef struct {
     int numeroQuadro;
     bool bitModificacao;
     int ultimoAcesso;
-    int quantidadeAcessos;
+    int quantidadeAcessos; 
 } InformacoesEntrada;
 
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada);
