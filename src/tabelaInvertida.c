@@ -41,7 +41,7 @@ void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
 
 int RANTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
-    
+
     return rand() % tabela->capacidade;
 }
 

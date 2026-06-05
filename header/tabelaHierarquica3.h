@@ -24,6 +24,10 @@ typedef struct {
     int tamanhoNivel1;
     int tamanhoNivel2;
     int tamanhoNivel3;
+
+    unsigned int bitsNivel1;
+    unsigned int bitsNivel2;
+    unsigned int bitsNivel3;
 } TabelaHierarquica_3;
 
 #endif

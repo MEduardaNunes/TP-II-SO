@@ -8,13 +8,9 @@
 #include <string.h>
 
 void calcularIndicesHierarquicos2(EspecificacaoSimulador *simulador, int numeroPagina, int *p1, int *p2) {
-    unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
-    unsigned int bitsPaginaLogica = 32 - deslocamento;
-    unsigned int bitsNivel1 = bitsPaginaLogica / 2;
-    unsigned int bitsNivel2 = bitsPaginaLogica - bitsNivel1;
-
-    *p1 = numeroPagina >> bitsNivel2;
-    *p2 = numeroPagina & ((1U << bitsNivel2) - 1);
+    TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
+    *p1 = numeroPagina >> tabela->bitsNivel2;
+    *p2 = numeroPagina & ((1U << tabela->bitsNivel2) - 1);
 }
 
 void inicializarTabelaHierarquica2(EspecificacaoSimulador *simulador) {
@@ -23,11 +19,11 @@ void inicializarTabelaHierarquica2(EspecificacaoSimulador *simulador) {
 
     unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
     unsigned int bitsPaginaLogica = 32 - deslocamento;
-    unsigned int bitsNivel1 = bitsPaginaLogica / 2;
-    unsigned int bitsNivel2 = bitsPaginaLogica - bitsNivel1;
+    tabela->bitsNivel1 = bitsPaginaLogica / 2;
+    tabela->bitsNivel2 = bitsPaginaLogica - tabela->bitsNivel1;
 
-    tabela->tamanhoTabelaExterna = (1U << bitsNivel1);
-    tabela->tamanhoTabelaInterna = (1U << bitsNivel2);
+    tabela->tamanhoTabelaExterna = (1U << tabela->bitsNivel1);
+    tabela->tamanhoTabelaInterna = (1U << tabela->bitsNivel2);
 
     tabela->tabelaExterna = (EntradaTabelaHierarquicaNivel1_2*) malloc(tabela->tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2));
 
@@ -110,25 +106,29 @@ int RANTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
 
 int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
-    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
 
     int paginaMaisAntiga = -1;
     int minTempo = INT_MAX;
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
-        incrementarAcessosTabela(estatisticas);
-
+        
         if (pagina == -1) continue;
 
         int p1, p2;
         calcularIndicesHierarquicos2(simulador, pagina, &p1, &p2);
 
-        EntradaTabelaHierarquicaNivel2_2 *entrada_i = &tabela->tabelaExterna[p1].tabelaInterna[p2];
+        if (!tabela->tabelaExterna[p1].alocada)
+            continue;
+
+        EntradaTabelaHierarquicaNivel2_2 *entrada = &tabela->tabelaExterna[p1].tabelaInterna[p2];
         
-        if (entrada_i->valido && entrada_i->informacoes.ultimoAcesso < minTempo) {
-            minTempo = entrada_i->informacoes.ultimoAcesso;
-            paginaMaisAntiga = pagina; 
+        if (!entrada->valido)
+            continue;
+
+        if (entrada->informacoes.ultimoAcesso < minTempo) {
+            minTempo = entrada->informacoes.ultimoAcesso;
+            paginaMaisAntiga = pagina;
         }
     }
 
@@ -138,9 +138,7 @@ int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
 int MFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
-
 }
-
 
 int LFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
@@ -242,19 +240,21 @@ void acessarPaginaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int num
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
     int *tempo = &simulador->simuladorTabelaHierarquica2.tempo;
     (*tempo)++;
-    
-    incrementarAcessosTabela(estatisticas);
 
     int p1, p2;
     calcularIndicesHierarquicos2(simulador, numeroPagina, &p1, &p2);
 
-    if (p1 < tabela->tamanhoTabelaExterna &&
-        tabela->tabelaExterna[p1].alocada &&
-        tabela->tabelaExterna[p1].tabelaInterna != NULL &&
-        tabela->tabelaExterna[p1].tabelaInterna[p2].valido
-    ) {
-        atualizarInformacoesEntrada(&tabela->tabelaExterna[p1].tabelaInterna[p2].informacoes, *tempo, tipoAcesso);
-        return;
+    incrementarAcessosTabela(estatisticas);
+
+    if (p1 < tabela->tamanhoTabelaExterna && tabela->tabelaExterna[p1].alocada){
+        incrementarAcessosTabela(estatisticas);
+        
+        if (p2 < tabela->tamanhoTabelaInterna &&
+            tabela->tabelaExterna[p1].tabelaInterna[p2].valido)
+        {
+            atualizarInformacoesEntrada(&tabela->tabelaExterna[p1].tabelaInterna[p2].informacoes, *tempo, tipoAcesso);
+            return;
+        }
     }
 
     incrementarPageFaults(estatisticas);

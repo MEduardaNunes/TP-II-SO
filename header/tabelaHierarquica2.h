@@ -18,6 +18,9 @@ typedef struct {
     EntradaTabelaHierarquicaNivel1_2 *tabelaExterna;
     int tamanhoTabelaExterna; 
     int tamanhoTabelaInterna;
+
+    unsigned int bitsNivel1;
+    unsigned int bitsNivel2;
 } TabelaHierarquica_2;
 
 

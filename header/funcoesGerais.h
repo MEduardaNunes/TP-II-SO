@@ -5,7 +5,7 @@
 
 // Informações gerais da entrada da tabela de páginas
 typedef struct {
-    int numeroPagina;
+    unsigned int numeroPagina;
     int numeroQuadro;
     bool bitModificacao;
     int ultimoAcesso;
@@ -13,7 +13,7 @@ typedef struct {
 } InformacoesEntrada;
 
 void inicializarInformacoesEntrada(InformacoesEntrada *entrada);
-void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso);
+void preencherInformacoesEntrada(InformacoesEntrada *entrada, unsigned int numeroPagina, int numeroQuadro, int ultimoAcesso);
 void setarBitModificacao(InformacoesEntrada *entrada); 
 void atualizarInformacoesEntrada(InformacoesEntrada *entrada, int ultimoAcesso, char tipoAcesso);
 int achaPrimeiroQuadroLivre(bool *quadrosLivres, int numeroQuadros);

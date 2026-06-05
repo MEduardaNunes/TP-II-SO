@@ -7,30 +7,26 @@
 #include <limits.h>
 #include <string.h>
 
-void calcularIndicesHierarquicos3(EspecificacaoSimulador *simulador, int numeroPagina, int *p1, int *p2, int *p3) {
-    unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
-    unsigned int bitsPaginaLogica = 32 - deslocamento;
-    unsigned int bitsNivel1 = bitsPaginaLogica / 3;
-    unsigned int bitsNivel2 = bitsPaginaLogica / 3;
-    unsigned int bitsNivel3 = bitsPaginaLogica - bitsNivel1 - bitsNivel2;
-
-    *p1 = numeroPagina >> (bitsNivel2 + bitsNivel3);
-    *p2 = (numeroPagina >> bitsNivel3) & ((1 << bitsNivel2) - 1);
-    *p3 = numeroPagina & ((1 << bitsNivel3) - 1);
+void calcularIndicesHierarquicos3(EspecificacaoSimulador *simulador, unsigned int numeroPagina, int *p1, int *p2, int *p3) {
+    TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
+    *p1 = numeroPagina >> (tabela->bitsNivel2 + tabela->bitsNivel3);
+    *p2 = (numeroPagina >> tabela->bitsNivel3) & ((1U << tabela->bitsNivel2)-1);
+    *p3 = numeroPagina & ((1U << tabela->bitsNivel3)-1);
 }
 
 void inicializarTabelaHierarquica3(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
+    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
     
     unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
     unsigned int bitsPaginaLogica = 32 - deslocamento;
-    unsigned int bitsNivel1 = bitsPaginaLogica / 3;
-    unsigned int bitsNivel2 = bitsPaginaLogica / 3;
-    unsigned int bitsNivel3 = bitsPaginaLogica - bitsNivel1 - bitsNivel2;
+    tabela->bitsNivel1 = bitsPaginaLogica / 3;
+    tabela->bitsNivel2 = bitsPaginaLogica / 3;
+    tabela->bitsNivel3 = bitsPaginaLogica - tabela->bitsNivel1 - tabela->bitsNivel2;
 
-    tabela->tamanhoNivel1 = 1 << bitsNivel1;
-    tabela->tamanhoNivel2 = 1 << bitsNivel2;
-    tabela->tamanhoNivel3 = 1 << bitsNivel3;
+    tabela->tamanhoNivel1 = 1U << tabela->bitsNivel1;
+    tabela->tamanhoNivel2 = 1U << tabela->bitsNivel2;
+    tabela->tamanhoNivel3 = 1U << tabela->bitsNivel3;
 
     tabela->tabelaNivel1 = (EntradaTabelaHierarquicaNivel1_3*) malloc(tabela->tamanhoNivel1 * sizeof(EntradaTabelaHierarquicaNivel1_3));
     
@@ -44,7 +40,7 @@ void inicializarTabelaHierarquica3(EspecificacaoSimulador *simulador) {
         tabela->tabelaNivel1[i].alocada = false;
     }
 
-    incrementarMemoriaConsumida(&simulador->simuladorTabelaHierarquica3.estatisticas, tabela->tamanhoNivel1 *sizeof(EntradaTabelaHierarquicaNivel1_3));
+    estatisticas->memoriaConsumida += tabela->tamanhoNivel1 * sizeof(EntradaTabelaHierarquicaNivel1_3);
 }
 
 // alocação sob demanda
@@ -141,23 +137,32 @@ int RANTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
 
 int LRUTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
-    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
 
     int paginaMaisAntiga = -1;
     int minTempo = INT_MAX;
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaHierarquica3.paginasPorQuadro[i];
-        incrementarAcessosTabela(estatisticas);
-
+        
         if (pagina == -1) continue;
 
         int p1, p2, p3;
         calcularIndicesHierarquicos3(simulador, pagina, &p1, &p2, &p3);
+        
+        if(!tabela->tabelaNivel1[p1].alocada) continue;
+
+        if(!tabela->tabelaNivel1[p1].tabelaNivel2[p2].alocada)
+            continue;
 
         EntradaTabelaHierarquicaNivel3_3 *entrada = &tabela->tabelaNivel1[p1].tabelaNivel2[p2].tabelaNivel3[p3];
         
-        if (entrada->valido && entrada->informacoes.ultimoAcesso < minTempo) {
+        if(p3 >= tabela->tamanhoNivel3)
+            continue;
+            
+        if(!entrada->valido)
+            continue;
+
+        if (entrada->informacoes.ultimoAcesso < minTempo) {
             minTempo = entrada->informacoes.ultimoAcesso;
             paginaMaisAntiga = pagina; 
         }
@@ -199,7 +204,7 @@ int selecionaPaginaParaSubstituirTabelaHierarquica_3(EspecificacaoSimulador *sim
 }
 
 
-void adicionarEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void adicionarEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
 
@@ -226,7 +231,7 @@ void adicionarEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int 
 }
 
 
-void substituirEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void substituirEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
     int tempo = simulador->simuladorTabelaHierarquica3.tempo;
@@ -247,7 +252,9 @@ void substituirEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int
     }
 
     int numeroQuadro = entradaAntiga->informacoes.numeroQuadro; 
-    entradaAntiga->valido = false; 
+    entradaAntiga->valido = false;
+
+    inicializarInformacoesEntrada(&entradaAntiga->informacoes);
 
     int p1Novo, p2Novo, p3Novo;
     calcularIndicesHierarquicos3(simulador, numeroPagina, &p1Novo, &p2Novo, &p3Novo);
@@ -268,11 +275,10 @@ void substituirEntradaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int
     }
 }
 
-void acessarPaginaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void acessarPaginaTabelaHierarquica_3(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
     int *tempo = &simulador->simuladorTabelaHierarquica3.tempo;
-    
     (*tempo)++;
 
     int p1, p2, p3;
@@ -280,16 +286,16 @@ void acessarPaginaTabelaHierarquica_3(EspecificacaoSimulador *simulador, int num
 
     incrementarAcessosTabela(estatisticas);
 
-    if (tabela->tabelaNivel1[p1].alocada) {
+    if (p1 < tabela->tamanhoNivel1 && tabela->tabelaNivel1[p1].alocada) {
         incrementarAcessosTabela(estatisticas);
         EntradaTabelaHierarquicaNivel2_3 *nivel2 = tabela->tabelaNivel1[p1].tabelaNivel2;
         
-        if (nivel2[p2].alocada) {
+        if (p2 < tabela->tamanhoNivel2 && nivel2[p2].alocada) {
             EntradaTabelaHierarquicaNivel3_3 *nivel3 = nivel2[p2].tabelaNivel3;
 
             incrementarAcessosTabela(estatisticas);
 
-            if (nivel3[p3].valido) {
+            if (p3 < tabela->tamanhoNivel3 && nivel3[p3].valido) {
                 atualizarInformacoesEntrada(&nivel3[p3].informacoes, *tempo, tipoAcesso);
                 return;
             }
