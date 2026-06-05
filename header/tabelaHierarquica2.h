@@ -6,17 +6,18 @@
 // Estrutura da Tabela de Páginas Hierárquica de dois níveis
 typedef struct {
     InformacoesEntrada informacoes;
+    bool valido;
 } EntradaTabelaHierarquicaNivel2_2;
 
 typedef struct {
-    EntradaTabelaHierarquicaNivel2_2* entradas;
-    int quantidadeEntradasPreenchidas;
-    int capacidadeEntradasNivel1;
+    EntradaTabelaHierarquicaNivel2_2 *tabelaInterna;
+    bool alocada;
 } EntradaTabelaHierarquicaNivel1_2;
 
 typedef struct {
-    EntradaTabelaHierarquicaNivel1_2 tabelaBase;
-    int quantidadeEntradasPreenchidas;
+    EntradaTabelaHierarquicaNivel1_2 *tabelaExterna;
+    int tamanhoTabelaExterna; 
+    int tamanhoTabelaInterna;
 } TabelaHierarquica_2;
 
 

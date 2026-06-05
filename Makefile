@@ -30,7 +30,7 @@ test_tabela1: simulador
 	@echo ""
 	@echo "--- Iniciando testes da Tabela 1 ---"
 	@echo ""
-	@for alg in RAND LRU LFU MFU; do \
+	@for alg in RAN LRU LFU MFU; do \
 		for mem in 128 512 2048 8192 16384; do \
 			for file in compilador.log matriz.log compressor.log simulador.log; do \
 				echo "Executando: $$alg | $$file | 4 KB | Mem: $$mem KB"; \
@@ -44,7 +44,7 @@ test_tabela2: simulador
 	@echo ""
 	@echo "--- Iniciando testes da Tabela 2 ---"
 	@echo ""
-	@for alg in RAND LRU LFU MFU; do \
+	@for alg in RAN LRU LFU MFU; do \
 		for pag in 2 4 8 16 32 64; do \
 			for file in compilador.log matriz.log compressor.log simulador.log; do \
 				echo "Executando: $$alg | $$file | Pag: $$pag KB | Mem: 4096 KB"; \
@@ -57,7 +57,7 @@ test_tabela3: simulador
 	@echo ""
 	@echo "--- Iniciando testes da Tabela 3 ---"
 	@echo ""
-	@for alg in RAND LRU LFU MFU; do \
+	@for alg in RAN LRU LFU MFU; do \
 		for pag in 2 4 8 16 32 64; do \
 			for file in compilador.log matriz.log compressor.log simulador.log; do \
 				echo "Executando: $$alg | $$file | Pag: $$pag KB | Mem: 4096 KB"; \

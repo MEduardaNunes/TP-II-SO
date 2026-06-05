@@ -34,6 +34,7 @@ typedef struct{
 typedef struct{
     TabelaHierarquica_2 tabela;
     bool *quadrosLivres;
+    int *paginasPorQuadro;
     int numeroQuadroOcupados;
     int tempo;
     EstatisticasTabela estatisticas;
