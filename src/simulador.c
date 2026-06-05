@@ -201,7 +201,9 @@ void rodarSimulador(EspecificacaoSimulador *simulador) {
 
         acessarPaginaTabelaInvertida(simulador, numeroPagina, rw);
         simulador->simuladorTabelaInvertida.estatisticas.numeroReferenciasMemoria++;
-    
+        
+        acessarPaginaTabelaHierarquica_2(simulador, numeroPagina, rw);
+        simulador->simuladorTabelaHierarquica2.estatisticas.numeroReferenciasMemoria++;
         // Modo debug
         if (simulador->modoDebugAtivo) {
             printf("Lido: Endereco=%08x, Pagina=%u, Operacao=%c\n", endereco, numeroPagina, rw);
