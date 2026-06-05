@@ -114,6 +114,28 @@ int MFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
 int LFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
+
+    int paginaMenosFrequente = -1;
+    int minAcessos = __INT_MAX__;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
+        incrementarAcessosTabela(estatisticas);
+
+        if (pagina == -1) continue;
+
+        int p1, p2;
+        calcularIndicesHierarquicos(simulador, pagina, &p1, &p2);
+
+        EntradaTabelaHierarquicaNivel2_2 *entrada_i = &tabela->tabelaExterna[p1].tabelaInterna[p2];
+        
+        if (entrada_i->valido && entrada_i->informacoes.quantidadeAcessos < minAcessos) {
+            minAcessos = entrada_i->informacoes.quantidadeAcessos;
+            paginaMenosFrequente = pagina;
+        }
+    }
+
+    return paginaMenosFrequente;
 }
 
 
