@@ -39,30 +39,6 @@ void inicializarTabelaHierarquica2(EspecificacaoSimulador *simulador) {
         tabela->tabelaExterna[i].tabelaInterna = NULL;
         tabela->tabelaExterna[i].alocada = false;
     }
-
-    simulador->simuladorTabelaHierarquica2.quadrosLivres = (bool*) malloc(simulador->numeroQuadros * sizeof(bool));
-    
-    if (simulador->simuladorTabelaHierarquica2.quadrosLivres == NULL){
-        fprintf(stderr, "Erro ao alocar quadros livres\n");
-        exit(1);
-    }
-
-    simulador->simuladorTabelaHierarquica2.paginasPorQuadro = (int*) malloc(simulador->numeroQuadros * sizeof(int));
-    
-    if (simulador->simuladorTabelaHierarquica2.paginasPorQuadro == NULL){
-        fprintf(stderr, "Erro ao alocar paginasPorQuadro\n");
-        exit(1);
-    }
-
-    for (int i = 0; i < simulador->numeroQuadros; i++) {
-        simulador->simuladorTabelaHierarquica2.quadrosLivres[i] = true;
-        simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i] = -1;
-    }
-    simulador->simuladorTabelaHierarquica2.numeroQuadroOcupados = 0;
-    simulador->simuladorTabelaHierarquica2.tempo = 0;
-
-    inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica2.estatisticas);
-    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida = tabela->tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2);
 }
 
 // alocação sob demanda
