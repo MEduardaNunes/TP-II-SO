@@ -7,7 +7,7 @@
 #include <limits.h>
 #include <string.h>
 
-void calcularIndicesHierarquicos(EspecificacaoSimulador *simulador, int numeroPagina, int *p1, int *p2) {
+void calcularIndicesHierarquicos2(EspecificacaoSimulador *simulador, int numeroPagina, int *p1, int *p2) {
     unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
     unsigned int bitsPaginaLogica = 32 - deslocamento;
     unsigned int bitsNivel1 = bitsPaginaLogica / 2;
@@ -119,7 +119,7 @@ int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
         if (pagina == -1) continue;
 
         int p1, p2;
-        calcularIndicesHierarquicos(simulador, pagina, &p1, &p2);
+        calcularIndicesHierarquicos2(simulador, pagina, &p1, &p2);
 
         EntradaTabelaHierarquicaNivel2_2 *entrada_i = &tabela->tabelaExterna[p1].tabelaInterna[p2];
         
@@ -170,7 +170,7 @@ void adicionarEntradaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int 
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
 
     int p1, p2;
-    calcularIndicesHierarquicos(simulador, numeroPagina, &p1, &p2);
+    calcularIndicesHierarquicos2(simulador, numeroPagina, &p1, &p2);
 
     alocarTabelaInternaSeNecessario(tabela, p1, estatisticas);
 
@@ -203,7 +203,7 @@ void substituirEntradaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int
     }
 
     int p1Antigo, p2Antigo;
-    calcularIndicesHierarquicos(simulador, paginaVitima, &p1Antigo, &p2Antigo);
+    calcularIndicesHierarquicos2(simulador, paginaVitima, &p1Antigo, &p2Antigo);
 
     EntradaTabelaHierarquicaNivel2_2 *entradaAntiga = &tabela->tabelaExterna[p1Antigo].tabelaInterna[p2Antigo];
 
@@ -215,7 +215,7 @@ void substituirEntradaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int
     entradaAntiga->valido = false; 
 
     int p1Novo, p2Novo;
-    calcularIndicesHierarquicos(simulador, numeroPagina, &p1Novo, &p2Novo);
+    calcularIndicesHierarquicos2(simulador, numeroPagina, &p1Novo, &p2Novo);
 
     alocarTabelaInternaSeNecessario(tabela, p1Novo, estatisticas);
 
@@ -241,7 +241,7 @@ void acessarPaginaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int num
     incrementarAcessosTabela(estatisticas);
 
     int p1, p2;
-    calcularIndicesHierarquicos(simulador, numeroPagina, &p1, &p2);
+    calcularIndicesHierarquicos2(simulador, numeroPagina, &p1, &p2);
 
     if (tabela->tabelaExterna[p1].alocada && tabela->tabelaExterna[p1].tabelaInterna[p2].valido) {
         atualizarInformacoesEntrada(&tabela->tabelaExterna[p1].tabelaInterna[p2].informacoes, *tempo, tipoAcesso);
