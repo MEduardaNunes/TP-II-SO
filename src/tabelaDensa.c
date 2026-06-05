@@ -42,8 +42,14 @@ void destruirTabelaDensa(EspecificacaoSimulador *simulador) {
 
 
 int RANTabelaDensa(EspecificacaoSimulador *simulador) {
-    TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
-    
+    int paginaVitima = -1;
+
+    while (paginaVitima == -1) {
+        int quadroRandom = rand() % simulador->numeroQuadros;
+        paginaVitima = simulador->simuladorTabelaDensa.paginasPorQuadro[quadroRandom];
+    }
+
+    return paginaVitima;
 }
 
 int LRUTabelaDensa(EspecificacaoSimulador *simulador) {
