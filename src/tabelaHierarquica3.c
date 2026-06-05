@@ -132,7 +132,7 @@ int RANTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
     int paginaVitima = -1;
 
     while (paginaVitima == -1) {
-        int quadroRandom = rand() % simulador->numeroQuadros;
+        int quadroRandom = random() % simulador->numeroQuadros;
         paginaVitima = simulador->simuladorTabelaHierarquica3.paginasPorQuadro[quadroRandom];
     }
 
@@ -144,7 +144,7 @@ int LRUTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
 
     int paginaMaisAntiga = -1;
-    int minTempo = __INT_MAX__;
+    int minTempo = INT_MAX;
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaHierarquica3.paginasPorQuadro[i];

@@ -6,9 +6,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <limits.h>
+#include <time.h>
 
 int main (int argc, char *argv[]) {
     // processamento inicial
+    srandom(time(NULL));
     EspecificacaoSimulador simulador = {0};
     lerArgumentosTerminal(argc, argv, &simulador);
     rodarSimulador(&simulador);

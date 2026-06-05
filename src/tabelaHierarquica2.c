@@ -14,26 +14,29 @@ void calcularIndicesHierarquicos2(EspecificacaoSimulador *simulador, int numeroP
     unsigned int bitsNivel2 = bitsPaginaLogica - bitsNivel1;
 
     *p1 = numeroPagina >> bitsNivel2;
-    *p2 = numeroPagina & ((1 << bitsNivel2) - 1);
+    *p2 = numeroPagina & ((1U << bitsNivel2) - 1);
 }
 
 void inicializarTabelaHierarquica2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
-    
+    EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
+
     unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
     unsigned int bitsPaginaLogica = 32 - deslocamento;
     unsigned int bitsNivel1 = bitsPaginaLogica / 2;
     unsigned int bitsNivel2 = bitsPaginaLogica - bitsNivel1;
 
-    tabela->tamanhoTabelaExterna = 1 << bitsNivel1;
-    tabela->tamanhoTabelaInterna = 1 << bitsNivel2;
+    tabela->tamanhoTabelaExterna = (1U << bitsNivel1);
+    tabela->tamanhoTabelaInterna = (1U << bitsNivel2);
 
     tabela->tabelaExterna = (EntradaTabelaHierarquicaNivel1_2*) malloc(tabela->tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2));
-    
+
     if (tabela->tabelaExterna == NULL) {
         fprintf(stderr, "Erro ao alocar tabela externa hierarquica\n");
         exit(1);
     }
+
+    estatisticas->memoriaConsumida += tabela->tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2);
 
     for (int i = 0; i < tabela->tamanhoTabelaExterna; i++) {
         tabela->tabelaExterna[i].tabelaInterna = NULL;
@@ -98,7 +101,7 @@ int RANTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     int paginaVitima = -1;
 
     while (paginaVitima == -1) {
-        int quadroRandom = rand() % simulador->numeroQuadros;
+        int quadroRandom = random() % simulador->numeroQuadros;
         paginaVitima = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[quadroRandom];
     }
 
@@ -110,7 +113,7 @@ int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
 
     int paginaMaisAntiga = -1;
-    int minTempo = __INT_MAX__;
+    int minTempo = INT_MAX;
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
@@ -212,7 +215,9 @@ void substituirEntradaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int
     }
 
     int numeroQuadro = entradaAntiga->informacoes.numeroQuadro; 
-    entradaAntiga->valido = false; 
+    entradaAntiga->valido = false;
+
+    inicializarInformacoesEntrada(&entradaAntiga->informacoes);
 
     int p1Novo, p2Novo;
     calcularIndicesHierarquicos2(simulador, numeroPagina, &p1Novo, &p2Novo);
@@ -243,7 +248,11 @@ void acessarPaginaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int num
     int p1, p2;
     calcularIndicesHierarquicos2(simulador, numeroPagina, &p1, &p2);
 
-    if (tabela->tabelaExterna[p1].alocada && tabela->tabelaExterna[p1].tabelaInterna[p2].valido) {
+    if (p1 < tabela->tamanhoTabelaExterna &&
+        tabela->tabelaExterna[p1].alocada &&
+        tabela->tabelaExterna[p1].tabelaInterna != NULL &&
+        tabela->tabelaExterna[p1].tabelaInterna[p2].valido
+    ) {
         atualizarInformacoesEntrada(&tabela->tabelaExterna[p1].tabelaInterna[p2].informacoes, *tempo, tipoAcesso);
         return;
     }
