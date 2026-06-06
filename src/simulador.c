@@ -32,6 +32,7 @@ void inicializarSimuladorTabelaDensa(EspecificacaoSimulador *simulador) {
 }
 
 void inicializarSimuladorTabelaHierarquica2(EspecificacaoSimulador *simulador) {
+    inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica2.estatisticas);
     inicializarTabelaHierarquica2(simulador);
 
     // Alocação dos quadros livres
@@ -55,12 +56,37 @@ void inicializarSimuladorTabelaHierarquica2(EspecificacaoSimulador *simulador) {
     simulador->simuladorTabelaHierarquica2.numeroQuadroOcupados = 0;
     simulador->simuladorTabelaHierarquica2.tempo = 0;
 
-    inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica2.estatisticas);
-    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida = simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2) + simulador->numeroQuadros * sizeof(int);
+    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida += (simulador->numeroQuadros * sizeof(bool)) * (simulador->numeroQuadros * sizeof(int));;
 }
 
-void inicializarSimuladorTabelaHierarquica3(EspecificacaoSimulador *simulador) {
 
+void inicializarSimuladorTabelaHierarquica3(EspecificacaoSimulador *simulador) {
+    inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica3.estatisticas);
+    inicializarTabelaHierarquica3(simulador);
+
+    // Alocação dos quadros livres
+    simulador->simuladorTabelaHierarquica3.quadrosLivres = (bool*) malloc(simulador->numeroQuadros * sizeof(bool));
+    if (simulador->simuladorTabelaHierarquica3.quadrosLivres == NULL){
+        fprintf(stderr, "Erro ao alocar quadrosLivres\n");
+        exit(1);
+    }
+
+    // Alocação das páginas por quadro
+    simulador->simuladorTabelaHierarquica3.paginasPorQuadro = (int*) malloc(simulador->numeroQuadros * sizeof(int));
+    if (simulador->simuladorTabelaHierarquica3.paginasPorQuadro == NULL){
+        fprintf(stderr, "Erro ao alocar paginasPorQuadro\n");
+        exit(1);
+    }
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        simulador->simuladorTabelaHierarquica3.quadrosLivres[i] = true;
+        simulador->simuladorTabelaHierarquica3.paginasPorQuadro[i] = -1;
+    }
+    
+    simulador->simuladorTabelaHierarquica3.numeroQuadroOcupados = 0;
+    simulador->simuladorTabelaHierarquica3.tempo = 0;
+
+    simulador->simuladorTabelaHierarquica3.estatisticas.memoriaConsumida += (simulador->numeroQuadros * sizeof(bool)) + (simulador->numeroQuadros * sizeof(int));
 }
 
 void inicializarSimuladorTabelaInvertida(EspecificacaoSimulador *simulador) {
@@ -261,7 +287,15 @@ void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
 }
 
 void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
-
+    unsigned int capacidade = simulador->simuladorTabelaHierarquica3.tabela.tamanhoNivel1 * simulador->simuladorTabelaHierarquica3.tabela.tamanhoNivel2 * simulador->simuladorTabelaHierarquica3.tabela.tamanhoNivel3;
+                              
+    printf("-------------------- TABELA HIERARQUICA 3 NIVEIS -------------------\n");
+    printf("Número de entradas: %u\n", capacidade);
+    printf("Page faults: %lu\n", simulador->simuladorTabelaHierarquica3.estatisticas.numeroPageFaults);
+    printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica3.estatisticas.numeroPaginasSujasEscritas);
+    imprimirMemoriaConsumida(simulador->simuladorTabelaHierarquica3.estatisticas.memoriaConsumida);
+    printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaHierarquica3.estatisticas.acessosTabela);
+    salvarResultadosDebug(simulador, simulador->simuladorTabelaHierarquica3.estatisticas.numeroPageFaults, simulador->simuladorTabelaHierarquica3.estatisticas.numeroPaginasSujasEscritas);
 }
 
 void imprimirResultadosTabelaInvertida(EspecificacaoSimulador *simulador) {

@@ -1,8 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-OBJS = obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o obj/main.o obj/tabelaHierarquica2.o
-
+OBJS = obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o obj/main.o obj/tabelaHierarquica2.o obj/tabelaHierarquica3.o
 LOG_DIR = testes
 
 all: simulador
@@ -19,6 +18,9 @@ obj/funcoesGerais.o: header/funcoesGerais.h src/funcoesGerais.c
 obj/tabelaHierarquica2.o: src/tabelaHierarquica2.c
 	$(CC) $(CFLAGS) -c src/tabelaHierarquica2.c -o obj/tabelaHierarquica2.o
 
+obj/tabelaHierarquica3.o: src/tabelaHierarquica3.c
+	$(CC) $(CFLAGS) -c src/tabelaHierarquica3.c -o obj/tabelaHierarquica3.o
+	
 obj/tabelaDensa.o: header/tabelaDensa.h src/tabelaDensa.c
 	$(CC) $(CFLAGS) -c src/tabelaDensa.c -o obj/tabelaDensa.o
 

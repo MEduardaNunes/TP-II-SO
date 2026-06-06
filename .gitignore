@@ -1,3 +1,7 @@
+simulador.exe
+/.vscode/
+.vscode/
+obj/
 simulador
 /.vscode/
 .vscode/
