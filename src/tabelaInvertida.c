@@ -41,7 +41,9 @@ void destruirTabelaInvertida(EspecificacaoSimulador *simulador) {
 
 int RANTabelaInvertida(EspecificacaoSimulador * simulador) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
-
+    if (tabela->capacidade <= 0) {
+        return -1;
+    }
     return rand() % tabela->capacidade;
 }
 
@@ -113,7 +115,7 @@ int selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulad
     if (strcmp(politicaSubstituicao, "LRU") == 0) {
         return LRUTabelaInvertida(simulador);
 
-    } else if (strcmp(politicaSubstituicao, "RAND") == 0) {
+    } else if (strcmp(politicaSubstituicao, "RAND") == 0 || strcmp(politicaSubstituicao, "RAN") == 0) {
         return RANTabelaInvertida(simulador);
 
     } else if (strcmp(politicaSubstituicao, "MFU") == 0) {
@@ -129,6 +131,11 @@ int selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulad
 void adicionarEntradaTabelaInvertida(EspecificacaoSimulador *simulador, int numeroPagina, int numeroQuadro, char tipoAcesso) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     int *tempo = &simulador->simuladorTabelaInvertida.tempo;
+
+    if (numeroQuadro < 0 || numeroQuadro >= tabela->capacidade) {
+        fprintf(stderr, "Erro: número de quadro inválido ao adicionar entrada na tabela invertida: %d\n", numeroQuadro);
+        return;
+    }
 
     EntradaTabelaInvertida *entrada = &tabela->entradas[numeroQuadro];
     preencherInformacoesEntrada(&entrada->informacoes, numeroPagina, numeroQuadro, *tempo);
@@ -191,6 +198,21 @@ void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, unsigned in
     } else {
         // Memória cheia: Substituir usando a política escolhida
         int index = selecionaPaginaParaSubstituirTabelaInvertida(simulador);
+        if (index < 0 || index >= tabela->capacidade) {
+            // fallback: selecionar a primeira entrada válida possível
+            for (int i = 0; i < tabela->capacidade; i++) {
+                if (tabela->entradas[i].valido) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        if (index < 0 || index >= tabela->capacidade) {
+            fprintf(stderr, "Erro: nenhum quadro válido encontrado para substituição na tabela invertida.\n");
+            return;
+        }
+
         substituirEntradaTabelaInvertida(simulador, index, numeroPagina, tipoAcesso);
         incrementarAcessosTabela(estatisticas);
     }

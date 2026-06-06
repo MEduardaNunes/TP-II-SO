@@ -232,7 +232,7 @@ static void imprimirMemoriaConsumida(long memoriaConsumida) {
 
     } else if (memoriaConsumida % 1024 == 0) {
         printf("Memória consumida: %ld KB\n", memoriaConsumida / 1024);
-        
+
     } else {
         printf("Memória consumida: %.2f KB\n", memoriaConsumida / 1024.0);
     }
@@ -275,6 +275,7 @@ void imprimirSimulador(EspecificacaoSimulador *simulador) {
     imprimirResultadosTabelaHierarquica2(simulador);
     imprimirResultadosTabelaHierarquica3(simulador);
     imprimirResultadosTabelaInvertida(simulador);
+    printf("\n");
 }
 
 void destruirSimulador(EspecificacaoSimulador *simulador) {

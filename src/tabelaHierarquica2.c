@@ -138,11 +138,55 @@ int LRUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
 int MFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
+    int paginaMaisFrequente = -1;
+    int maxAcessos = -1;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
+        if (pagina == -1) continue;
+
+        int p1, p2;
+        calcularIndicesHierarquicos2(simulador, pagina, &p1, &p2);
+        if (!tabela->tabelaExterna[p1].alocada) continue;
+
+        EntradaTabelaHierarquicaNivel2_2 *entrada = &tabela->tabelaExterna[p1].tabelaInterna[p2];
+        incrementarAcessosTabela(estatisticas);
+
+        if (!entrada->valido) continue;
+        if (entrada->informacoes.quantidadeAcessos > maxAcessos) {
+            maxAcessos = entrada->informacoes.quantidadeAcessos;
+            paginaMaisFrequente = pagina;
+        }
+    }
+
+    return paginaMaisFrequente;
 }
 
 int LFUTabelaHierarquica_2(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
+    int paginaMenosFrequente = -1;
+    int minAcessos = INT_MAX;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica2.paginasPorQuadro[i];
+        if (pagina == -1) continue;
+
+        int p1, p2;
+        calcularIndicesHierarquicos2(simulador, pagina, &p1, &p2);
+        if (!tabela->tabelaExterna[p1].alocada) continue;
+
+        EntradaTabelaHierarquicaNivel2_2 *entrada = &tabela->tabelaExterna[p1].tabelaInterna[p2];
+        incrementarAcessosTabela(estatisticas);
+
+        if (!entrada->valido) continue;
+        if (entrada->informacoes.quantidadeAcessos < minAcessos) {
+            minAcessos = entrada->informacoes.quantidadeAcessos;
+            paginaMenosFrequente = pagina;
+        }
+    }
+
+    return paginaMenosFrequente;
 }
 
 

@@ -174,13 +174,60 @@ int LRUTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
 int MFUTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
+    int paginaMaisFrequente = -1;
+    int maxAcessos = -1;
 
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica3.paginasPorQuadro[i];
+        if (pagina == -1) continue;
+
+        int p1, p2, p3;
+        calcularIndicesHierarquicos3(simulador, pagina, &p1, &p2, &p3);
+        if (!tabela->tabelaNivel1[p1].alocada) continue;
+        if (!tabela->tabelaNivel1[p1].tabelaNivel2[p2].alocada) continue;
+        if (p3 >= tabela->tamanhoNivel3) continue;
+
+        EntradaTabelaHierarquicaNivel3_3 *entrada = &tabela->tabelaNivel1[p1].tabelaNivel2[p2].tabelaNivel3[p3];
+        incrementarAcessosTabela(estatisticas);
+
+        if (!entrada->valido) continue;
+        if (entrada->informacoes.quantidadeAcessos > maxAcessos) {
+            maxAcessos = entrada->informacoes.quantidadeAcessos;
+            paginaMaisFrequente = pagina;
+        }
+    }
+
+    return paginaMaisFrequente;
 }
 
 
 int LFUTabelaHierarquica_3(EspecificacaoSimulador *simulador) {
     TabelaHierarquica_3 *tabela = &simulador->simuladorTabelaHierarquica3.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica3.estatisticas;
+    int paginaMenosFrequente = -1;
+    int minAcessos = INT_MAX;
+
+    for (int i = 0; i < simulador->numeroQuadros; i++) {
+        int pagina = simulador->simuladorTabelaHierarquica3.paginasPorQuadro[i];
+        if (pagina == -1) continue;
+
+        int p1, p2, p3;
+        calcularIndicesHierarquicos3(simulador, pagina, &p1, &p2, &p3);
+        if (!tabela->tabelaNivel1[p1].alocada) continue;
+        if (!tabela->tabelaNivel1[p1].tabelaNivel2[p2].alocada) continue;
+        if (p3 >= tabela->tamanhoNivel3) continue;
+
+        EntradaTabelaHierarquicaNivel3_3 *entrada = &tabela->tabelaNivel1[p1].tabelaNivel2[p2].tabelaNivel3[p3];
+        incrementarAcessosTabela(estatisticas);
+
+        if (!entrada->valido) continue;
+        if (entrada->informacoes.quantidadeAcessos < minAcessos) {
+            minAcessos = entrada->informacoes.quantidadeAcessos;
+            paginaMenosFrequente = pagina;
+        }
+    }
+
+    return paginaMenosFrequente;
 }
 
 
