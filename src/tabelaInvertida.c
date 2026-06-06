@@ -115,7 +115,7 @@ int selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulad
     if (strcmp(politicaSubstituicao, "LRU") == 0) {
         return LRUTabelaInvertida(simulador);
 
-    } else if (strcmp(politicaSubstituicao, "RAND") == 0 || strcmp(politicaSubstituicao, "RAN") == 0) {
+    } else if (strcmp(politicaSubstituicao, "RAN") == 0) {
         return RANTabelaInvertida(simulador);
 
     } else if (strcmp(politicaSubstituicao, "MFU") == 0) {
@@ -173,11 +173,11 @@ void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, unsigned in
 
     // Verificar se a página já existe na tabela
     for (int i = 0; i < tabela->capacidade; i++) {
+        incrementarAcessosTabela(estatisticas);
         EntradaTabelaInvertida *entrada = &tabela->entradas[i];
         if (!entrada->valido) continue;
         if (entrada->informacoes.numeroPagina == numeroPagina) {
             atualizarInformacoesEntrada(&entrada->informacoes, *tempo, tipoAcesso);
-            incrementarAcessosTabela(estatisticas);
             return; // Encontrado!
         }
     }
