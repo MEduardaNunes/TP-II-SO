@@ -61,9 +61,11 @@ int LRUTabelaDensa(EspecificacaoSimulador *simulador) {
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
-        incrementarAcessosTabela(estatisticas);
         
         if (pagina == -1) continue;
+
+        /* Contabiliza um acesso à tabela quando lemos a entrada correspondente */
+        incrementarAcessosTabela(estatisticas);
 
         EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
         if (entrada_i->valido && entrada_i->informacoes.ultimoAcesso < minTempo) {
@@ -83,9 +85,11 @@ int MFUTabelaDensa(EspecificacaoSimulador *simulador) {
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
-        incrementarAcessosTabela(estatisticas);
 
         if (pagina == -1) continue;
+
+        /* Contabiliza um acesso à tabela quando lemos a entrada correspondente */
+        incrementarAcessosTabela(estatisticas);
 
         EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
         if (entrada_i->valido && entrada_i->informacoes.quantidadeAcessos > maxAcessos) {
@@ -106,9 +110,11 @@ int LFUTabelaDensa(EspecificacaoSimulador *simulador) {
 
     for (int i = 0; i < simulador->numeroQuadros; i++) {
         int pagina = simulador->simuladorTabelaDensa.paginasPorQuadro[i];
-        incrementarAcessosTabela(estatisticas);
 
         if (pagina == -1) continue;
+
+        /* Contabiliza um acesso à tabela quando lemos a entrada correspondente */
+        incrementarAcessosTabela(estatisticas);
 
         EntradaTabelaDensa *entrada_i = &tabela->entradas[pagina];
         if (entrada_i->valido && entrada_i->informacoes.quantidadeAcessos < minAcessos) {
