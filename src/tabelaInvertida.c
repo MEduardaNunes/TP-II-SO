@@ -44,7 +44,7 @@ int RANTabelaInvertida(EspecificacaoSimulador * simulador) {
     if (tabela->capacidade <= 0) {
         return -1;
     }
-    return rand() % tabela->capacidade;
+    return random() % tabela->capacidade;
 }
 
 int LRUTabelaInvertida(EspecificacaoSimulador * simulador) {
