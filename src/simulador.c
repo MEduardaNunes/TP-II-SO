@@ -223,6 +223,7 @@ void imprimirEspecificacoesGerais(EspecificacaoSimulador *simulador) {
     printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
     printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
     printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
+    printf("Número de quadros: %u\n", simulador->numeroQuadros);
     printf("Política de substituição: %s\n", simulador->politicaSubstituicao);
 }
 
@@ -240,6 +241,7 @@ static void imprimirMemoriaConsumida(long memoriaConsumida) {
 
 void imprimirResultadosTabelaDensa(EspecificacaoSimulador *simulador) {
     printf("--------------------------- TABELA DENSA ---------------------------\n");
+    printf("Número de entradas: %u\n", simulador->simuladorTabelaDensa.tabela.capacidade);
     printf("Page faults: %lu\n", simulador->simuladorTabelaDensa.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida);
@@ -248,7 +250,9 @@ void imprimirResultadosTabelaDensa(EspecificacaoSimulador *simulador) {
 }
 
 void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
+    int capacidade = simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaExterna * simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaInterna;
     printf("-------------------- TABELA HIERARQUICA 2 NIVEIS -------------------\n");
+    printf("Número de entradas: %u\n", capacidade);
     printf("Page faults: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida);
@@ -262,6 +266,7 @@ void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
 
 void imprimirResultadosTabelaInvertida(EspecificacaoSimulador *simulador) {
     printf("------------------------- TABELA INVERTIDA -------------------------\n");
+    printf("Número de entradas: %u\n", simulador->simuladorTabelaInvertida.tabela.capacidade);
     printf("Page faults: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida);
