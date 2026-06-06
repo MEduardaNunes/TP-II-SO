@@ -198,15 +198,6 @@ void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, unsigned in
     } else {
         // Memória cheia: Substituir usando a política escolhida
         int index = selecionaPaginaParaSubstituirTabelaInvertida(simulador);
-        if (index < 0 || index >= tabela->capacidade) {
-            // fallback: selecionar a primeira entrada válida possível
-            for (int i = 0; i < tabela->capacidade; i++) {
-                if (tabela->entradas[i].valido) {
-                    index = i;
-                    break;
-                }
-            }
-        }
 
         if (index < 0 || index >= tabela->capacidade) {
             fprintf(stderr, "Erro: nenhum quadro válido encontrado para substituição na tabela invertida.\n");
