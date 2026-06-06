@@ -172,8 +172,8 @@ void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroP
         incrementarPaginasSujasEscritas(&simulador->simuladorTabelaDensa.estatisticas);
 
     int numeroQuadro = entradaSubstituir->informacoes.numeroQuadro;
+    inicializarInformacoesEntrada(&entradaSubstituir->informacoes);
     entradaSubstituir->valido = false;
-    entradaSubstituir->informacoes.numeroQuadro = -1;
     simulador->simuladorTabelaDensa.paginasPorQuadro[numeroQuadro] = numeroPagina;
 
     inicializarInformacoesEntrada(&entrada->informacoes);
@@ -183,7 +183,7 @@ void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroP
 
 
 void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
-    if ((int) numeroPagina >= simulador->simuladorTabelaDensa.tabela.capacidade) {
+    if (numeroPagina >= (unsigned int) simulador->simuladorTabelaDensa.tabela.capacidade) {
         printf("Erro: Número de página inválido.\n");
         return;
     }
