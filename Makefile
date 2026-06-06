@@ -1,8 +1,15 @@
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -g
 
 OBJS = obj/funcoesGerais.o obj/tabelaDensa.o obj/tabelaInvertida.o obj/simulador.o obj/main.o obj/tabelaHierarquica2.o obj/tabelaHierarquica3.o
 LOG_DIR = testes
+
+memory_leak: simulador
+	valgrind \
+		--leak-check=full \
+		--show-leak-kinds=all \
+		--track-origins=yes \
+		./simulador LRU testes/compilador.log 4 16
 
 all: simulador
 

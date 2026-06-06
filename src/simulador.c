@@ -192,14 +192,14 @@ void salvarResultadosDebug(EspecificacaoSimulador *simulador, unsigned long page
     fclose(file);
 }
 
-void rodarSimulador(EspecificacaoSimulador *simulador) {
+int rodarSimulador(EspecificacaoSimulador *simulador) {
     unsigned int deslocamento = calcularDeslocamento(simulador->tamanhoPagina);
 
     // inicialização da estrutura
     FILE *file = fopen(simulador->arquivoLog, "r");
     if (!file) {
         printf("Erro ao abrir o arquivo: %s\n", simulador->arquivoLog);
-        return;
+        return 1;
     }
 
     // TEMPORARIO
@@ -246,6 +246,8 @@ void rodarSimulador(EspecificacaoSimulador *simulador) {
     fclose(file);
     if (fileDebugInv) fclose(fileDebugInv); // TEMP
     if (fileDebugDen) fclose(fileDebugDen); // TEMP
+
+    return 0;
 }
 
 void imprimirEspecificacoesGerais(EspecificacaoSimulador *simulador) {
@@ -323,5 +325,7 @@ void imprimirSimulador(EspecificacaoSimulador *simulador) {
 
 void destruirSimulador(EspecificacaoSimulador *simulador) {
     destruirTabelaDensa(simulador);
+    destruirTabelaHierarquica2(simulador);
+    destruirTabelaHierarquica3(simulador);
     destruirTabelaInvertida(simulador);
 }

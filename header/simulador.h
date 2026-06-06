@@ -70,7 +70,7 @@ typedef struct EspecificacaoSimulador {
 
 void inicializarSimulador(EspecificacaoSimulador *especificacao, int numeroPaginas, int numeroQuadros, int tamanhoPagina, int tamanhoMemoria, char* politicaSubstituicao, char *arquivoLog, bool modoDebugAtivo);
 void lerArgumentosTerminal(int argc, char *argv[], EspecificacaoSimulador *simulador);
-void rodarSimulador(EspecificacaoSimulador *simulador);
+int rodarSimulador(EspecificacaoSimulador *simulador);
 void imprimirSimulador(EspecificacaoSimulador *simulador);
 void destruirSimulador(EspecificacaoSimulador *simulador);
 
