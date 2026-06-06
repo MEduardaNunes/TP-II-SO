@@ -19,6 +19,6 @@ typedef struct {
 // Protótipos das funções para manipulação da tabela invertida
 void inicializarTabelaInvertida(EspecificacaoSimulador *simulador, int capacidade);
 void destruirTabelaInvertida(EspecificacaoSimulador *simulador);
-void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso);
+void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso);
 
 #endif

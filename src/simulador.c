@@ -28,7 +28,7 @@ void inicializarSimuladorTabelaDensa(EspecificacaoSimulador *simulador) {
 
     //Inicializando estatísticas
     inicializarEstatisticasTabela(&simulador->simuladorTabelaDensa.estatisticas);
-    simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaDensa);
+    simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaDensa) + simulador->numeroQuadros * sizeof(bool) + simulador->numeroQuadros * sizeof(int);
 }
 
 void inicializarSimuladorTabelaHierarquica2(EspecificacaoSimulador *simulador) {
@@ -56,7 +56,7 @@ void inicializarSimuladorTabelaHierarquica2(EspecificacaoSimulador *simulador) {
     simulador->simuladorTabelaHierarquica2.tempo = 0;
 
     inicializarEstatisticasTabela(&simulador->simuladorTabelaHierarquica2.estatisticas);
-    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida = simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2);
+    simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida = simulador->simuladorTabelaHierarquica2.tabela.tamanhoTabelaExterna * sizeof(EntradaTabelaHierarquicaNivel1_2) + simulador->numeroQuadros * sizeof(int);
 }
 
 void inicializarSimuladorTabelaHierarquica3(EspecificacaoSimulador *simulador) {
@@ -80,7 +80,7 @@ void inicializarSimuladorTabelaInvertida(EspecificacaoSimulador *simulador) {
 
     //Inicializando estatísticas
     inicializarEstatisticasTabela(&simulador->simuladorTabelaInvertida.estatisticas);
-    simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaInvertida);
+    simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida = capacidade * sizeof(EntradaTabelaInvertida) + simulador->numeroQuadros * sizeof(bool);
 }
 
 void inicializarSimulador(EspecificacaoSimulador *especificacao, int numeroPaginas, int numeroQuadros, int tamanhoPagina, int tamanhoMemoria, char* politicaSubstituicao, char *arquivoLog, bool modoDebugAtivo) {
@@ -219,35 +219,40 @@ void rodarSimulador(EspecificacaoSimulador *simulador) {
 }
 
 void imprimirEspecificacoesGerais(EspecificacaoSimulador *simulador) {
-    printf("CONFIGURAÇÕES GERAIS\n");
+    printf("======================= CONFIGURAÇÕES GERAIS =======================\n");
     printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
     printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
     printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
     printf("Política de substituição: %s\n", simulador->politicaSubstituicao);
-    printf("\n");
+}
+
+static void imprimirMemoriaConsumida(long memoriaConsumida) {
+    if (memoriaConsumida < 1024) {
+        printf("Memória consumida: %ld bytes\n", memoriaConsumida);
+
+    } else if (memoriaConsumida % 1024 == 0) {
+        printf("Memória consumida: %ld KB\n", memoriaConsumida / 1024);
+        
+    } else {
+        printf("Memória consumida: %.2f KB\n", memoriaConsumida / 1024.0);
+    }
 }
 
 void imprimirResultadosTabelaDensa(EspecificacaoSimulador *simulador) {
-    printf("\nTABELA DENSA\n");
-    printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
-    printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
-    printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
-    printf("Tecnica de reposicao: %s\n", simulador->politicaSubstituicao);
+    printf("--------------------------- TABELA DENSA ---------------------------\n");
     printf("Page faults: %lu\n", simulador->simuladorTabelaDensa.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
-    printf("\n");
+    imprimirMemoriaConsumida(simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida);
+    printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaDensa.estatisticas.acessosTabela);
     salvarResultadosDebug(simulador, simulador->simuladorTabelaDensa.estatisticas.numeroPageFaults, simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
 }
 
 void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
-    printf("TABELA HIERARQUICA 2 NIVEIS\n");
-    printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
-    printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
-    printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
-    printf("Tecnica de reposicao: %s\n", simulador->politicaSubstituicao);
+    printf("-------------------- TABELA HIERARQUICA 2 NIVEIS -------------------\n");
     printf("Page faults: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
-    printf("\n");
+    imprimirMemoriaConsumida(simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida);
+    printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.acessosTabela);
     salvarResultadosDebug(simulador, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
 }
 
@@ -256,13 +261,11 @@ void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
 }
 
 void imprimirResultadosTabelaInvertida(EspecificacaoSimulador *simulador) {
-    printf("TABELA INVERTIDA\n");
-    printf("Arquivo de entrada: %s\n", simulador->arquivoLog);
-    printf("Tamanho da memoria: %u KB\n", simulador->tamanhoMemoria);
-    printf("Tamanho das paginas: %u KB\n", simulador->tamanhoPagina);
-    printf("Tecnica de reposicao: %s\n", simulador->politicaSubstituicao);
+    printf("------------------------- TABELA INVERTIDA -------------------------\n");
     printf("Page faults: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.numeroPageFaults);
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
+    imprimirMemoriaConsumida(simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida);
+    printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.acessosTabela);
     salvarResultadosDebug(simulador, simulador->simuladorTabelaInvertida.estatisticas.numeroPageFaults, simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
 }
 
@@ -275,6 +278,6 @@ void imprimirSimulador(EspecificacaoSimulador *simulador) {
 }
 
 void destruirSimulador(EspecificacaoSimulador *simulador) {
-    destruirTabelaInvertida(simulador);
     destruirTabelaDensa(simulador);
+    destruirTabelaInvertida(simulador);
 }

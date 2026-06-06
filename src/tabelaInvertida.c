@@ -108,7 +108,6 @@ int LFUTabelaInvertida(EspecificacaoSimulador * simulador) {
 }
 
 int selecionaPaginaParaSubstituirTabelaInvertida(EspecificacaoSimulador *simulador) {
-    TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     char* politicaSubstituicao = simulador->politicaSubstituicao;
 
     if (strcmp(politicaSubstituicao, "LRU") == 0) {
@@ -159,7 +158,7 @@ void substituirEntradaTabelaInvertida(EspecificacaoSimulador *simulador, int ind
     if (tipoAcesso == 'W') setarBitModificacao(&atual->informacoes);
 }
 
-void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void acessarPaginaTabelaInvertida(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
     TabelaInvertida *tabela = &simulador->simuladorTabelaInvertida.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaInvertida.estatisticas;
     int *tempo = &simulador->simuladorTabelaInvertida.tempo;

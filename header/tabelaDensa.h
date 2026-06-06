@@ -19,6 +19,6 @@ typedef struct {
 // Protótipos das funções para manipulação da tabela densa
 void inicializarTabelaDensa(EspecificacaoSimulador *simulador, int capacidade);
 void destruirTabelaDensa(EspecificacaoSimulador *simulador);
-void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso);
+void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso);
 
 #endif

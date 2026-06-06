@@ -9,7 +9,7 @@ void inicializarInformacoesEntrada(InformacoesEntrada *entrada) {
     entrada->quantidadeAcessos = 0;
 }
 
-void preencherInformacoesEntrada(InformacoesEntrada *entrada, int numeroPagina, int numeroQuadro, int ultimoAcesso) {
+void preencherInformacoesEntrada(InformacoesEntrada *entrada, unsigned int numeroPagina, int numeroQuadro, int ultimoAcesso) {
     entrada->numeroPagina = numeroPagina;
     entrada->numeroQuadro = numeroQuadro;
     entrada->ultimoAcesso = ultimoAcesso;

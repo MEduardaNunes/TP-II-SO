@@ -235,7 +235,7 @@ void substituirEntradaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int
     }
 }
 
-void acessarPaginaTabelaHierarquica_2(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void acessarPaginaTabelaHierarquica_2(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
     TabelaHierarquica_2 *tabela = &simulador->simuladorTabelaHierarquica2.tabela;
     EstatisticasTabela *estatisticas = &simulador->simuladorTabelaHierarquica2.estatisticas;
     int *tempo = &simulador->simuladorTabelaHierarquica2.tempo;

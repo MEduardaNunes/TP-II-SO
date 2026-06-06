@@ -122,7 +122,6 @@ int LFUTabelaDensa(EspecificacaoSimulador *simulador) {
 
 
 int selecionaPaginaParaSubstituirTabelaDensa(EspecificacaoSimulador *simulador) {
-    TabelaDensa *tabelaDensa = &simulador->simuladorTabelaDensa.tabela;
     char *politicaSubstituicao = simulador->politicaSubstituicao;
 
     if (strcmp(politicaSubstituicao, "RAN") == 0) {
@@ -142,7 +141,7 @@ int selecionaPaginaParaSubstituirTabelaDensa(EspecificacaoSimulador *simulador) 
 }
 
 
-void adicionarEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void adicionarEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina) {
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
     int numeroQuadro = achaPrimeiroQuadroLivre(simulador->simuladorTabelaDensa.quadrosLivres, simulador->numeroQuadros);
     int tempo = simulador->simuladorTabelaDensa.tempo;
@@ -155,7 +154,7 @@ void adicionarEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPa
 }
 
 
-void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
+void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina) {
     TabelaDensa *tabela = &simulador->simuladorTabelaDensa.tabela;
     int tempo = simulador->simuladorTabelaDensa.tempo;
     EntradaTabelaDensa *entrada = &tabela->entradas[numeroPagina];
@@ -183,8 +182,8 @@ void substituirEntradaTabelaDensa(EspecificacaoSimulador *simulador, int numeroP
 }
 
 
-void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagina, char tipoAcesso) {
-    if (numeroPagina >= simulador->simuladorTabelaDensa.tabela.capacidade) {
+void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso) {
+    if ((int) numeroPagina >= simulador->simuladorTabelaDensa.tabela.capacidade) {
         printf("Erro: Número de página inválido.\n");
         return;
     }
@@ -206,12 +205,12 @@ void acessarPaginaTabelaDensa(EspecificacaoSimulador *simulador, int numeroPagin
     // Se não existe quadro para página
     if (simulador->simuladorTabelaDensa.numeroQuadroOcupados < simulador->numeroQuadros) {
         // Se existem quadro livres, aloque no primeiro para a página
-        adicionarEntradaTabelaDensa(simulador, numeroPagina, tipoAcesso);  
+        adicionarEntradaTabelaDensa(simulador, numeroPagina);  
         simulador->simuladorTabelaDensa.numeroQuadroOcupados++;
 
     } else {
         // Se não tem mais quadros livres, selecione uma página para pegar o quadro
-        substituirEntradaTabelaDensa(simulador, numeroPagina, tipoAcesso);
+        substituirEntradaTabelaDensa(simulador, numeroPagina);
     }
 
     if (tipoAcesso == 'W')  setarBitModificacao(&entrada->informacoes);

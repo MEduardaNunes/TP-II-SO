@@ -3,6 +3,8 @@
 
 #include "funcoesGerais.h"
 
+typedef struct EspecificacaoSimulador EspecificacaoSimulador;
+
 // Estrutura da Tabela de Páginas Hierárquica de três níveis
 typedef struct {
     InformacoesEntrada informacoes;
@@ -29,5 +31,9 @@ typedef struct {
     unsigned int bitsNivel2;
     unsigned int bitsNivel3;
 } TabelaHierarquica_3;
+
+void inicializarTabelaHierarquica3(EspecificacaoSimulador *simulador);
+void destruirTabelaHierarquica3(EspecificacaoSimulador *simulador);
+void acessarPaginaTabelaHierarquica_3(EspecificacaoSimulador *simulador, unsigned int numeroPagina, char tipoAcesso);
 
 #endif
