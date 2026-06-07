@@ -4,7 +4,10 @@ import pandas as pd
 df = pd.read_csv('resultados/resultados_consolidados.csv', sep=';', 
                  names=['Politica', 'Log', 'Memoria', 'Pagina', 'Tabela', 'PageFaults', 'Sujas', 'MemoriaConsumida', 'Acessos'])
 
-# Limpar nome do log (de 'testes/compilador.log' para 'Compilador')
+df['PageFaults'] = pd.to_numeric(df['PageFaults'], errors='coerce').astype('Int64')
+df['Sujas'] = pd.to_numeric(df['Sujas'], errors='coerce').astype('Int64')
+df['MemoriaConsumida'] = pd.to_numeric(df['MemoriaConsumida'], errors='coerce').astype('Int64')
+df['Acessos'] = pd.to_numeric(df['Acessos'], errors='coerce').astype('Int64')
 df['Log'] = df['Log'].str.replace('testes/', '').str.replace('.log', '').str.capitalize()
 
 # 2. Gerar dados para a Tabela 1 (Memória Crescente, Pag=4, Tabela Densa/Qualquer)
@@ -51,13 +54,13 @@ caminho_saida = 'resultados/tabelas_latex.txt'
 
 with open(caminho_saida, 'w', encoding='utf-8') as f:
     f.write("="*60 + "\nTABELA 1 LATEX: Comportamento com Memória Crescente (4 KB)\n" + "="*60 + "\n")
-    f.write(tabela1.to_string() + "\n\n")
+    f.write(tabela1.to_latex(float_format='%.0f') + "\n\n")
     
     f.write("="*60 + "\nTABELA 2 LATEX: Comportamento com Página Variável (Memória 4 MB)\n" + "="*60 + "\n")
-    f.write(tabela2.to_string() + "\n\n")
+    f.write(tabela2.to_latex(float_format='%.0f') + "\n\n")
     
     f.write("="*60 + "\nTABELA 3 LATEX: Custo das Estruturas (Compilador, LRU, Memória 4 MB)\n" + "="*60 + "\n")
-    f.write(tabela3.to_string(index=False) + "\n\n")
+    f.write(tabela3.to_latex(index=False) + "\n\n")
     
     f.write("="*60 + "\nMÉTRICAS RELATIVAS: Para análise da Tabela 3 no texto\n" + "="*80 + "\n")
     f.write(tab3_metricas.to_string(index=False) + "\n\n")
