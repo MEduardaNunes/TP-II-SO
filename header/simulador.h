@@ -75,6 +75,6 @@ void imprimirSimulador(EspecificacaoSimulador *simulador);
 void destruirSimulador(EspecificacaoSimulador *simulador);
 
 // Função debug
-void salvarResultadosDebug(EspecificacaoSimulador *simulador, unsigned long pageFaults, unsigned long paginasSujas);
+void salvarResultadosDebug(EspecificacaoSimulador *simulador, const char *nomeTabela, unsigned long pageFaults, unsigned long paginasSujas, long memoriaConsumida, long acessosTabela);
 
 #endif

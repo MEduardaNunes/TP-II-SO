@@ -170,24 +170,28 @@ void lerArgumentosTerminal(int argc, char *argv[], EspecificacaoSimulador *simul
     inicializarSimulador(simulador, numeroPaginas, numeroQuadros, tamanhoPagina, tamanhoMemoria, politicaSubstituicao, arquivoLog, modoDebugAtivo);
 }
 
-void salvarResultadosDebug(EspecificacaoSimulador *simulador, unsigned long pageFaults, unsigned long paginasSujas) {
+void salvarResultadosDebug(EspecificacaoSimulador *simulador, const char *nomeTabela, unsigned long pageFaults, unsigned long paginasSujas, long memoriaConsumida, long acessosTabela) {
     char nomeArquivo[150];
     
-    sprintf(nomeArquivo, "resultados/resultado_%s.csv", simulador->politicaSubstituicao);
-
+    //sprintf(nomeArquivo, "resultados/resultado_%s.csv", simulador->politicaSubstituicao);
+    sprintf(nomeArquivo, "resultados/resultados_consolidados.csv");
+    
     FILE *file = fopen(nomeArquivo, "a");
     if (file == NULL) {
         printf("Aviso: Nao foi possivel salvar o log em %s.\n", nomeArquivo);
         return;
     }
 
-    fprintf(file, "%s;%s;%u;%u;%lu;%lu\n",
+    fprintf(file, "%s;%s;%u;%u;%s;%lu;%lu;%ld;%lu\n",
             simulador->politicaSubstituicao,
             simulador->arquivoLog,
             simulador->tamanhoMemoria,
             simulador->tamanhoPagina,
+            nomeTabela,
             pageFaults,
-            paginasSujas);
+            paginasSujas,
+            memoriaConsumida,
+            acessosTabela);
 
     fclose(file);
 }
@@ -278,7 +282,13 @@ void imprimirResultadosTabelaDensa(EspecificacaoSimulador *simulador) {
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida);
     printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaDensa.estatisticas.acessosTabela);
-    salvarResultadosDebug(simulador, simulador->simuladorTabelaDensa.estatisticas.numeroPageFaults, simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas);
+    salvarResultadosDebug(simulador, 
+        "Densa",
+        simulador->simuladorTabelaDensa.estatisticas.numeroPageFaults, 
+        simulador->simuladorTabelaDensa.estatisticas.numeroPaginasSujasEscritas, 
+        simulador->simuladorTabelaDensa.estatisticas.memoriaConsumida,
+        simulador->simuladorTabelaDensa.estatisticas.acessosTabela
+    );
 }
 
 void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
@@ -289,7 +299,13 @@ void imprimirResultadosTabelaHierarquica2(EspecificacaoSimulador *simulador) {
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida);
     printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaHierarquica2.estatisticas.acessosTabela);
-    salvarResultadosDebug(simulador, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults, simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas);
+    salvarResultadosDebug(simulador, 
+        "Hierarquica2",
+        simulador->simuladorTabelaHierarquica2.estatisticas.numeroPageFaults, 
+        simulador->simuladorTabelaHierarquica2.estatisticas.numeroPaginasSujasEscritas, 
+        simulador->simuladorTabelaHierarquica2.estatisticas.memoriaConsumida,
+        simulador->simuladorTabelaHierarquica2.estatisticas.acessosTabela
+    );
 }
 
 void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
@@ -301,7 +317,13 @@ void imprimirResultadosTabelaHierarquica3(EspecificacaoSimulador *simulador) {
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaHierarquica3.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaHierarquica3.estatisticas.memoriaConsumida);
     printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaHierarquica3.estatisticas.acessosTabela);
-    salvarResultadosDebug(simulador, simulador->simuladorTabelaHierarquica3.estatisticas.numeroPageFaults, simulador->simuladorTabelaHierarquica3.estatisticas.numeroPaginasSujasEscritas);
+    salvarResultadosDebug(simulador, 
+        "Hierarquica3",
+        simulador->simuladorTabelaHierarquica3.estatisticas.numeroPageFaults, 
+        simulador->simuladorTabelaHierarquica3.estatisticas.numeroPaginasSujasEscritas, 
+        simulador->simuladorTabelaHierarquica3.estatisticas.memoriaConsumida,
+        simulador->simuladorTabelaHierarquica3.estatisticas.acessosTabela
+    );
 }
 
 void imprimirResultadosTabelaInvertida(EspecificacaoSimulador *simulador) {
@@ -311,7 +333,13 @@ void imprimirResultadosTabelaInvertida(EspecificacaoSimulador *simulador) {
     printf("Paginas escritas: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
     imprimirMemoriaConsumida(simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida);
     printf("Acessos à tabela: %lu\n", simulador->simuladorTabelaInvertida.estatisticas.acessosTabela);
-    salvarResultadosDebug(simulador, simulador->simuladorTabelaInvertida.estatisticas.numeroPageFaults, simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas);
+    salvarResultadosDebug(simulador, 
+        "Invertida",
+        simulador->simuladorTabelaInvertida.estatisticas.numeroPageFaults, 
+        simulador->simuladorTabelaInvertida.estatisticas.numeroPaginasSujasEscritas, 
+        simulador->simuladorTabelaInvertida.estatisticas.memoriaConsumida,
+        simulador->simuladorTabelaInvertida.estatisticas.acessosTabela
+    );
 }
 
 void imprimirSimulador(EspecificacaoSimulador *simulador) {
