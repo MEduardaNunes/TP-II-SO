@@ -37,7 +37,7 @@ test_tabela1: simulador
 	@echo ""
 	@for alg in RAN LRU LFU MFU; do \
 		for mem in 128 512 2048 8192 16384; do \
-			for file in compilador.log matriz.log compressor.log simulador.log; do \
+			for file in compilador.log matriz.log compressor.log simulador.log sequencial.log aleatorio.log localidade.log; do \
 				echo "Executando: $$alg | $$file | 4 KB | Mem: $$mem KB" | tee -a resultados/teste_tabela1.txt; \
 				./simulador $$alg $(LOG_DIR)/$$file 4 $$mem | tee -a resultados/teste_tabela1.txt; \
 			done \
@@ -51,7 +51,7 @@ test_tabela2: simulador
 	@echo ""
 	@for alg in RAN LRU LFU MFU; do \
 		for pag in 2 4 8 16 32 64; do \
-			for file in compilador.log matriz.log compressor.log simulador.log; do \
+			for file in compilador.log matriz.log compressor.log simulador.log sequencial.log aleatorio.log localidade.log; do \
 				echo "Executando: $$alg | $$file | Pag: $$pag KB | Mem: 4096 KB" | tee -a resultados/teste_tabela2.txt; \
 				./simulador $$alg $(LOG_DIR)/$$file $$pag 4096 | tee -a resultados/teste_tabela2.txt; \
 			done \
@@ -64,7 +64,7 @@ test_tabela3: simulador
 	@echo ""
 	@for alg in RAN LRU LFU MFU; do \
 		for pag in 2 4 8 16 32 64; do \
-			for file in compilador.log matriz.log compressor.log simulador.log; do \
+			for file in compilador.log matriz.log compressor.log simulador.log sequencial.log aleatorio.log localidade.log; do \
 				echo "Executando: $$alg | $$file | Pag: $$pag KB | Mem: 4096 KB" | tee -a resultados/teste_tabela3.txt; \
 				./simulador $$alg $(LOG_DIR)/$$file $$pag 4096 | tee -a resultados/teste_tabela3.txt; \
 			done \

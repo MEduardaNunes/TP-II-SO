@@ -36,7 +36,10 @@ total_linhas_logs = {
     'Compilador': 1000000, 
     'Matriz': 1000000, 
     'Compressor': 1000000, 
-    'Simulador': 1000000
+    'Simulador': 1000000,
+    'Sequencial': 1000000, 
+    'Aleatorio': 1000000, 
+    'Localidade': 1000000
 }
 
 df['TotalRefs'] = df['Log'].map(total_linhas_logs)
