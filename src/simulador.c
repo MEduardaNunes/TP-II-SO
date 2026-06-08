@@ -178,7 +178,6 @@ void lerArgumentosTerminal(int argc, char *argv[], EspecificacaoSimulador *simul
 void salvarResultadosDebug(EspecificacaoSimulador *simulador, const char *nomeTabela, unsigned long pageFaults, unsigned long paginasSujas, long memoriaConsumida, long acessosTabela) {
     char nomeArquivo[150];
     
-    //sprintf(nomeArquivo, "resultados/resultado_%s.csv", simulador->politicaSubstituicao);
     sprintf(nomeArquivo, "resultados/resultados_consolidados.csv");
     
     FILE *file = fopen(nomeArquivo, "a");
@@ -211,7 +210,6 @@ int rodarSimulador(EspecificacaoSimulador *simulador) {
         return 1;
     }
 
-    // TEMPORARIO
     FILE *fileDebugInv = NULL, *fileDebugDen = NULL;
     if (simulador->modoDebugAtivo) {
         char nome[150];
