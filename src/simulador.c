@@ -139,8 +139,13 @@ void lerArgumentosTerminal(int argc, char *argv[], EspecificacaoSimulador *simul
     int tamanhoPagina = atoi(argv[3]);
     int tamanhoMemoria = atoi(argv[4]);
 
-    if (tamanhoPagina <= 0 || tamanhoMemoria <= 0) {
-        fprintf(stderr, "Erro: tamanho_pagina_kB e tamanho_memoria_kB devem ser maiores que zero.\n");
+    if (tamanhoPagina < 2 || tamanhoPagina > 64) {
+        fprintf(stderr, "Erro: tamanho_pagina_kB deve estar entre 2 e 64 KB.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (tamanhoMemoria < 128 || tamanhoMemoria > 16384) {
+        fprintf(stderr, "Erro: tamanho_memoria_kB deve estar entre 128 e 16384 KB.\n");
         exit(EXIT_FAILURE);
     }
 
